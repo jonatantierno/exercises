@@ -1,0 +1,5 @@
+Shady -QD:discard -2S:discard
+Rocky -KD:Shady +7H
+Danny -QC:Rocky +?? +??
+Lil -6H:Rocky -??:Shady -8H:discard +?? -10S:discard +??
+* -JS:Shady +10S +QS
