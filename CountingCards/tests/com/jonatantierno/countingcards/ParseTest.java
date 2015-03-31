@@ -18,7 +18,7 @@ public class ParseTest {
     @Before
     public void setup(){
         objectUnderTest = new CountingCards();
-        objectUnderTest.solve(new String[]{"res/SIMPLE_INPUT.txt"});
+        objectUnderTest.parse(new String[]{"res/SIMPLE_INPUT.txt"});
     }
 
     @Test
@@ -49,25 +49,15 @@ public class ParseTest {
         List<Action> actionList = objectUnderTest.getLine(3).getActions();
 
         assertEquals(6, actionList.size());
-        assertEquals(Player.ROCKY,actionList.get(0).recipient);
-
-        assertTrue(actionList.get(1).isPass());
-        assertFalse(actionList.get(3).isPass());
-
-        assertFalse(actionList.get(0).isDraw());
-        assertTrue(actionList.get(3).isDraw());
-
-        assertFalse(actionList.get(0).isDiscard());
-        assertFalse(actionList.get(3).isDiscard());
-        assertTrue(actionList.get(2).isDiscard());
+        assertEquals(Player.ROCKY, ((PassAction) actionList.get(0)).recipient);
     }
 
     @Test
     public void shouldParseCards(){
         List<Action> actionList = objectUnderTest.getLine(3).getActions();
 
-        assertEquals(new Card("6H"),actionList.get(0).getCard());
-        assertEquals(Card.UNKNOWN, actionList.get(1).getCard());
+        assertEquals("6H", actionList.get(0).card);
+        assertEquals(Game.UNKNOWN_CARD, actionList.get(1).card);
     }
 
 }

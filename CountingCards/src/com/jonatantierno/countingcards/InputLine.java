@@ -24,7 +24,7 @@ class InputLine {
         }
 
         while(scanner.hasNext()){
-            actions.add(new Action(scanner.next()));
+            actions.add(Action.build(player, scanner.next()));
         }
 
     }
