@@ -50,14 +50,15 @@ public class HandTest {
 
     @Test
     public void shouldDiscard(){
-        rockyHand.perform(new Action("-QD:discard"));
+        boolean success = rockyHand.perform(new Action("-QD:discard"));
 
+        assertTrue(success);
         assertEquals(3, rockyHand.cards.size());
         assertFalse(rockyHand.cards.contains(new Card("QD")));
 
     }
     @Test
-    public void whenDiscardAndCardIsNotThereThenNotify(){
-        fail("Not implemented");
+    public void whenDiscardAndCardIsNotInHandThenNotify(){
+        assertFalse(rockyHand.perform(new Action("-QH:discard")));
     }
 }
