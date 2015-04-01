@@ -20,8 +20,8 @@ public class CountingCards{
         game.add(Player.DISCARD);
     }
 
-    private final List<InputLine> inputLines = new ArrayList<>();
-    private Iterator<InputLine> iterator;
+    private final List<Turn> inputLines = new ArrayList<>();
+    private Iterator<Turn> iterator;
 
     /**
      * Main method.
@@ -36,7 +36,17 @@ public class CountingCards{
         try {
             Scanner scanner = new Scanner(new File(strings[0])).useDelimiter("\\n");
             while (scanner.hasNext()){
-                inputLines.add(new InputLine(scanner.next()));
+                Turn line = new Turn(scanner.next());
+
+                if (line.getPlayer() != Player.SIGNAL) {
+                    inputLines.add(line);
+                } else {
+                    Turn lilsLastTurn = inputLines.get(inputLines.size() - 1);
+
+                    assert lilsLastTurn.getPlayer() == Player.LIL;
+
+                    lilsLastTurn.addSignal(line);
+                }
             }
 
         } catch (FileNotFoundException e) {
@@ -46,12 +56,20 @@ public class CountingCards{
         iterator = inputLines.iterator();
     }
 
-    List<InputLine> getLinesRead() {
+    List<Turn> getLinesRead() {
         return inputLines;
     }
 
-    InputLine getLine(int i) {
+    Turn getLine(int i) {
         return inputLines.get(i);
     }
 
+    public static List<Action> toActions(List<Turn> lines) {
+        List<Action> actions = new ArrayList<>(lines.size());
+
+        for (Turn line : lines){
+            actions.addAll(line.getActions());
+        }
+        return actions;
+    }
 }

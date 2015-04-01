@@ -1,18 +1,18 @@
 package com.jonatantierno.countingcards;
 
-import javax.swing.*;
 import java.util.*;
 
 /**
- * This class represents a line of input. May be a turn or a signal
+ * This class represents a turn, that is, the moves of a player at her turn.
  * Created by jonatan on 30/03/15.
  */
-class InputLine {
+class Turn {
     private final String raw;
     private final Player player;
     private final List<Action> actions = new ArrayList<Action>();
+    final List<Turn> signals = new ArrayList<Turn>();
 
-    InputLine(String raw) {
+    Turn(String raw) {
         this.raw = raw;
 
         Scanner scanner = new Scanner(raw);
@@ -48,5 +48,25 @@ class InputLine {
     public List<Action> getActions() {
         return actions;
     }
-}
 
+    public void addSignal(Turn signalLine) {
+        signals.add(signalLine);
+
+        Iterator<Action> realActionIterator = actions.iterator();
+
+        for(Action signaledAction:signalLine.actions){
+            Action hiddenAction = getNextHiddenAction(realActionIterator);
+
+            hiddenAction.possibilities.add(signaledAction);
+        }
+    }
+
+    private Action getNextHiddenAction(Iterator<Action> realActionIterator) {
+        Action realAction = realActionIterator.next();
+
+        while(!realAction.card.equals(Game.UNKNOWN_CARD)){
+            realAction = realActionIterator.next();
+        }
+        return realAction;
+    }
+}

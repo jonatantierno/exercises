@@ -3,8 +3,7 @@ package com.jonatantierno.countingcards;
 import java.util.*;
 
 /**
- * This class represents the Game
- * Created by jonatan on 31/03/15.
+ * This class represents the status of the Game at a given point in time
  */
 public class Game {
 
@@ -23,8 +22,12 @@ public class Game {
         piles.get(Player.DISCARD).add(card);
     }
 
-    public void passTo(String card, Player recipient) {
-        piles.get(recipient).add(card);
+    public void passCard(String card) {
+        piles.get(Player.TRANSIT).add(card);
+    }
+
+    public void receiveCard(String card) {
+        piles.get(Player.TRANSIT).remove(card);
     }
 
     public String getPileAsString(Player player) {
@@ -45,7 +48,7 @@ public class Game {
         return piles.get(player);
     }
 
-    public Game perform(Action action) {
+    public List<Game> perform(Action action) {
         return action.perform(this);
     }
 
@@ -67,5 +70,6 @@ public class Game {
 
         return copy;
     }
+
 }
 

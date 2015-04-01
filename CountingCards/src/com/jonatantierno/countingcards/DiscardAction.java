@@ -1,5 +1,6 @@
 package com.jonatantierno.countingcards;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ public class DiscardAction extends Action{
     }
 
     @Override
-    public Game perform(Game game) {
+    public List<Game> perform(Game game) {
         Game newGame = game.cloneGame();
 
         List<String> cards = newGame.getPile(player);
@@ -24,6 +25,6 @@ public class DiscardAction extends Action{
             cards.remove(Game.UNKNOWN_CARD);
             newGame.discard(card);
         }
-        return newGame;
+        return Collections.singletonList(newGame);
     }
 }

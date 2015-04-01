@@ -22,14 +22,30 @@ public class GameTest {
     }
 
     @Test
-    public void whenFirstTurnShouldDrawCards() {
-        TurnNode turn = new TurnNode(objectUnderTest.getLinesRead(),objectUnderTest.game);
+    public void whenFirstActionShouldDrawCards() {
+        GameNode turn = new GameNode(objectUnderTest.game,CountingCards.toActions(objectUnderTest.getLinesRead()));
 
-        List<TurnNode> nextTurnPossibilities = turn.advanceTurn();
+        List<GameNode> nextTurnPossibilities = turn.advanceAction();
+
+        assertEquals(1, nextTurnPossibilities.size());
+        GameNode nextTurn = nextTurnPossibilities.get(0);
+
+        assertEquals("SHADY: ??", nextTurn.getPileAsString(Player.SHADY));
+        assertEquals("ROCKY:", nextTurn.getPileAsString(Player.ROCKY));
+        assertEquals("DANNY:", nextTurn.getPileAsString(Player.DANNY));
+        assertEquals("LIL:", nextTurn.getPileAsString(Player.LIL));
+
+        assertEquals("DISCARD:", turn.getPileAsString(Player.DISCARD));
+    }
+    //@Test
+    public void whenFirstTurnShouldDrawCards() {
+        GameNode turn = new GameNode(objectUnderTest.game,CountingCards.toActions(objectUnderTest.getLinesRead()));
+
+        List<GameNode> nextTurnPossibilities = turn.advanceTurn();
 
         assertEquals(1, nextTurnPossibilities.size());
 
-        TurnNode nextTurn = nextTurnPossibilities.get(0);
+        GameNode nextTurn = nextTurnPossibilities.get(0);
 
         assertEquals("SHADY: ?? ?? ?? ??", nextTurn.getPileAsString(Player.SHADY));
         assertEquals("ROCKY: QH KD 8S 9C", nextTurn.getPileAsString(Player.ROCKY));
@@ -44,18 +60,19 @@ public class GameTest {
         Game game = new Game();
         game.add(Player.ROCKY);
         game.add(Player.SHADY);
+        game.add(Player.TRANSIT);
 
-        game = game.perform(Action.build(Player.ROCKY, "+7C"));
-        game = game.perform(Action.build(Player.ROCKY, "-7C:Shady"));
+        game = game.perform(Action.build(Player.ROCKY, "+7C")).get(0);
+        game = game.perform(Action.build(Player.ROCKY, "-7C:Shady")).get(0);
 
         assertEquals("ROCKY:",game.getPileAsString(Player.ROCKY));
-        assertEquals("SHADY: 7C",game.getPileAsString(Player.SHADY));
+        assertEquals("SHADY:",game.getPileAsString(Player.SHADY));
     }
 
-    @Test
+    //@Test
     public void whenSecondTurnThenShouldUnfoldPossibilities() {
-        TurnNode turn = new TurnNode(objectUnderTest.getLinesRead(),objectUnderTest.game);
-        List<TurnNode> possibilities = turn.advanceTurn();
+        GameNode root = new GameNode(objectUnderTest.game, CountingCards.toActions(objectUnderTest.getLinesRead()));
+        List<GameNode> possibilities = root.advanceTurn();
 
         assertEquals(3,possibilities.size());
 

@@ -1,5 +1,6 @@
 package com.jonatantierno.countingcards;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,11 +13,11 @@ public class DrawAction extends Action{
     }
 
     @Override
-    public Game perform(Game game) {
+    public List<Game> perform(Game game) {
         Game newGame = game.cloneGame();
         List<String> cards = newGame.getPile(player);
 
         cards.add(card);
-        return newGame;
+        return Collections.singletonList(newGame);
     }
 }
