@@ -49,7 +49,7 @@ class Turn {
         return actions;
     }
 
-    public void addSignal(Turn signalLine) {
+    public void addSignal(Player p, Turn signalLine) {
         signals.add(signalLine);
 
         Iterator<Action> realActionIterator = actions.iterator();
@@ -57,7 +57,7 @@ class Turn {
         for(Action signaledAction:signalLine.actions){
             Action hiddenAction = getNextHiddenAction(realActionIterator);
 
-            hiddenAction.possibilities.add(signaledAction);
+            hiddenAction.possibilities.add(Action.build(p,signaledAction.raw));
         }
     }
 

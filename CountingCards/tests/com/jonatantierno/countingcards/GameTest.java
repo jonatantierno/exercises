@@ -22,37 +22,52 @@ public class GameTest {
     }
 
     @Test
-    public void whenFirstActionShouldDrawCards() {
-        GameNode turn = new GameNode(objectUnderTest.game,CountingCards.toActions(objectUnderTest.getLinesRead()));
+    public void whenFirstTurnShouldDrawCards() {
+        GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
 
-        List<GameNode> nextTurnPossibilities = turn.advanceAction();
+        GameNode nextTurn = turn.advanceTurn();
 
-        assertEquals(1, nextTurnPossibilities.size());
-        GameNode nextTurn = nextTurnPossibilities.get(0);
+        assertEquals("SHADY: ?? ?? ?? ??", nextTurn.game.getPileAsString(Player.SHADY));
+        assertEquals("ROCKY:", nextTurn.game.getPileAsString(Player.ROCKY));
+        assertEquals("DANNY:", nextTurn.game.getPileAsString(Player.DANNY));
+        assertEquals("LIL:", nextTurn.game.getPileAsString(Player.LIL));
 
-        assertEquals("SHADY: ??", nextTurn.getPileAsString(Player.SHADY));
-        assertEquals("ROCKY:", nextTurn.getPileAsString(Player.ROCKY));
-        assertEquals("DANNY:", nextTurn.getPileAsString(Player.DANNY));
-        assertEquals("LIL:", nextTurn.getPileAsString(Player.LIL));
+        assertEquals("DISCARD:", turn.game.getPileAsString(Player.DISCARD));
+    }
+    @Test
+    public void whenFirstRoundShouldDrawCards() {
+        GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
+
+        turn.advanceRound();
+
+        assertEquals("SHADY: ?? ?? ?? ??", turn.getPileAsString(Player.SHADY));
+        assertEquals("ROCKY: QH KD 8S 9C", turn.getPileAsString(Player.ROCKY));
+        assertEquals("DANNY: ?? ?? ?? ??", turn.getPileAsString(Player.DANNY));
+        assertEquals("LIL: 8H 9H JS 6H", turn.getPileAsString(Player.LIL));
 
         assertEquals("DISCARD:", turn.getPileAsString(Player.DISCARD));
     }
-    //@Test
-    public void whenFirstTurnShouldDrawCards() {
-        GameNode turn = new GameNode(objectUnderTest.game,CountingCards.toActions(objectUnderTest.getLinesRead()));
+    @Test
+    public void whenSecondRoundAndChooseOnePossibilityThenOk() {
+        GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
 
-        List<GameNode> nextTurnPossibilities = turn.advanceTurn();
+        // First Round
+        turn = turn.advanceRound();
 
-        assertEquals(1, nextTurnPossibilities.size());
+        // Second Round
+        turn = turn.advanceTurn().advanceTurn().advanceTurn();
 
-        GameNode nextTurn = nextTurnPossibilities.get(0);
+        assertEquals(Player.LIL, turn.nextPlayer());
+        assertFalse(turn.isCertain());
 
-        assertEquals("SHADY: ?? ?? ?? ??", nextTurn.getPileAsString(Player.SHADY));
-        assertEquals("ROCKY: QH KD 8S 9C", nextTurn.getPileAsString(Player.ROCKY));
-        assertEquals("DANNY: ?? ?? ?? ??", nextTurn.getPileAsString(Player.DANNY));
-        assertEquals("LIL: 8H 9H JS 6H", nextTurn.getPileAsString(Player.LIL));
+        turn = turn.advanceTurn(0);
 
-        assertEquals("DISCARD:", turn.getPileAsString(Player.DISCARD));
+        assertEquals("SHADY: ?? ??", turn.getPileAsString(Player.SHADY));
+        assertEquals("ROCKY: QH 8S 9C 7H", turn.getPileAsString(Player.ROCKY));
+        assertEquals("DANNY: ?? ?? ?? ?? ??", turn.getPileAsString(Player.DANNY));
+        assertEquals("LIL: 9H QS", turn.getPileAsString(Player.LIL));
+
+        assertEquals("DISCARD: QD 2S 8H 10S", turn.getPileAsString(Player.DISCARD));
     }
 
     @Test
@@ -67,17 +82,5 @@ public class GameTest {
 
         assertEquals("ROCKY:",game.getPileAsString(Player.ROCKY));
         assertEquals("SHADY:",game.getPileAsString(Player.SHADY));
-    }
-
-    //@Test
-    public void whenSecondTurnThenShouldUnfoldPossibilities() {
-        GameNode root = new GameNode(objectUnderTest.game, CountingCards.toActions(objectUnderTest.getLinesRead()));
-        List<GameNode> possibilities = root.advanceTurn();
-
-        assertEquals(3,possibilities.size());
-
-        assertEquals("SHADY: ?? ?? 8H", possibilities.get(0).getPileAsString(Player.SHADY));
-        assertEquals("SHADY: ?? ?? 9H", possibilities.get(1).getPileAsString(Player.SHADY));
-        assertEquals("SHADY: ?? ?? JS", possibilities.get(2).getPileAsString(Player.SHADY));
     }
 }

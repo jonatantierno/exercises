@@ -18,6 +18,7 @@ public class CountingCards{
         game.add(Player.DANNY);
         game.add(Player.LIL);
         game.add(Player.DISCARD);
+        game.add(Player.TRANSIT);
     }
 
     private final List<Turn> inputLines = new ArrayList<>();
@@ -45,7 +46,7 @@ public class CountingCards{
 
                     assert lilsLastTurn.getPlayer() == Player.LIL;
 
-                    lilsLastTurn.addSignal(line);
+                    lilsLastTurn.addSignal(Player.LIL,line);
                 }
             }
 

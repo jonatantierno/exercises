@@ -17,33 +17,36 @@ public class ReceiveAction extends Action{
     }
 
     @Override
-    public List<Game> perform(Game game) {
-        List<String> originalHand = game.getPile(player);
+    public Game perform(Game game, int possibilityIndex) {
+        assert possibilities.size() > possibilityIndex;
 
-        if (Game.UNKNOWN_CARD.equals(card) && player.equals(Player.LIL)){
-            assert possibilities.size() > 0;
+        Action possibleAction = possibilities.get(possibilityIndex);
+        assert possibleAction instanceof ReceiveAction;
 
-            List<Game> gameList = new ArrayList<>();
+        if (possibleAction.isPossible(game)){
+            Game possibleGame = game.cloneGame();
+            possibleGame.getPile(player).add(possibleAction.card);
+            possibleGame.receiveCard(possibleAction.card);
 
-            for(Action possibleAction: possibilities){
-                assert possibleAction instanceof ReceiveAction;
-
-                // Can Receive the card only if in Transit,
-                if (game.getPile(Player.TRANSIT).contains(possibleAction.card)){
-                    Game possibleGame = game.cloneGame();
-                    possibleGame.getPile(player).add(possibleAction.card);
-                    possibleGame.receiveCard(possibleAction.card);
-
-                    gameList.add(possibleGame);
-                }
-            }
-            return gameList;
+            return possibleGame;
+        } else {
+            return Game.IMPOSSIBLE;
         }
+    }
 
+    @Override
+    public Game perform(Game game) {
         Game newGame = game.cloneGame();
         newGame.getPile(player).add(card);
         newGame.receiveCard(card);
 
-        return Collections.singletonList(newGame);
+        return newGame;
+    }
+
+    @Override
+    public boolean isPossible(Game game) {
+        // Can Receive the card only if in Transit,
+        // TODO rest of the possibilities
+        return game.getPile(Player.TRANSIT).contains(card);
     }
 }

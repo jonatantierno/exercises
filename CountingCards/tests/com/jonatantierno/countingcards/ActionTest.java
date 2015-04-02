@@ -23,7 +23,7 @@ public class ActionTest {
         game.add(Player.SHADY);
         game.add(Player.LIL);
 
-        game = Action.build(Player.ROCKY, "+7H").perform(game).get(0);
+        game = Action.build(Player.ROCKY, "+7H").performAllPossibilities(game).get(0);
 
         game.add(Player.DISCARD);
         game.add(Player.TRANSIT);
@@ -32,7 +32,14 @@ public class ActionTest {
     @Test
     public void whenDiscardThenAddToDiscardPile(){
 
-        game = Action.build(Player.ROCKY, "-7H:discard").perform(game).get(0);
+        game = Action.build(Player.ROCKY, "-7H:discard").perform(game);
+
+        assertTrue(game.getPile(Player.DISCARD).contains("7H"));
+    }
+    @Test
+    public void whenDiscardAndPossibilitiesThenAddToDiscardPile(){
+
+        game = Action.build(Player.ROCKY, "-7H:discard").performAllPossibilities(game).get(0);
 
         assertTrue(game.getPile(Player.DISCARD).contains("7H"));
     }
@@ -41,17 +48,28 @@ public class ActionTest {
     public void whenDiscardAndCardUnknownThenAddToDiscardPile(){
         game.getPile(Player.ROCKY).add(Game.UNKNOWN_CARD);
 
-        game = Action.build(Player.ROCKY, "-7C:discard").perform(game).get(0);
+        game = Action.build(Player.ROCKY, "-7C:discard").performAllPossibilities(game).get(0);
 
         assertEquals(1, game.getPile(Player.ROCKY).size());
         assertTrue(game.getPile(Player.DISCARD).contains("7C"));
     }
 
     @Test
-    public void shouldPassCard(){
-        List<String> shadyHand = game.getPile(Player.SHADY);
+    public void shouldDraw(){
+        game = Action.build(Player.ROCKY, "+6H").perform(game);
 
-        game = Action.build(Player.ROCKY, "-7H:Shady").perform(game).get(0);
+        assertTrue(game.getPile(Player.ROCKY).contains("6H"));
+    }
+    @Test
+    public void shouldPassCard(){
+        game = Action.build(Player.ROCKY, "-7H:Shady").perform(game);
+
+        assertEquals(0, game.getPile(Player.ROCKY).size());
+        assertFalse(game.getPile(Player.SHADY).contains("7H"));
+    }
+    @Test
+    public void ifFixedShouldPassCard(){
+        game = Action.build(Player.ROCKY, "-7H:Shady").performAllPossibilities(game).get(0);
 
         assertEquals(0, game.getPile(Player.ROCKY).size());
         assertFalse(game.getPile(Player.SHADY).contains("7H"));
@@ -60,7 +78,18 @@ public class ActionTest {
     public void whenReceiveCardThenRemoveFromTransit(){
         game.getPile(Player.TRANSIT).add("7C");
 
-        game = Action.build(Player.ROCKY, "+7C:Shady").perform(game).get(0);
+        game = Action.build(Player.ROCKY, "+7C:Shady").perform(game);
+
+        assertEquals(2, game.getPile(Player.ROCKY).size());
+        assertTrue(game.getPile(Player.ROCKY).contains("7C"));
+
+        assertEquals(0, game.getPile(Player.TRANSIT).size());
+    }
+    @Test
+    public void whenReceiveCardIfFixedThenRemoveFromTransit(){
+        game.getPile(Player.TRANSIT).add("7C");
+
+        game = Action.build(Player.ROCKY, "+7C:Shady").performAllPossibilities(game).get(0);
 
         assertEquals(2, game.getPile(Player.ROCKY).size());
         assertTrue(game.getPile(Player.ROCKY).contains("7C"));
@@ -72,7 +101,7 @@ public class ActionTest {
     public void whenPassAndCardUnknownThenAddToTransitPile(){
         game.getPile(Player.ROCKY).add(Game.UNKNOWN_CARD);
 
-        game = Action.build(Player.ROCKY, "-7C:Shady").perform(game).get(0);
+        game = Action.build(Player.ROCKY, "-7C:Shady").performAllPossibilities(game).get(0);
 
         assertEquals(1, game.getPile(Player.ROCKY).size());
         assertTrue(game.getPile(Player.TRANSIT).contains("7C"));
@@ -86,15 +115,56 @@ public class ActionTest {
 
         Action action = Action.build(Player.LIL, "-??:Shady");
         action.possibilities.add(Action.build(Player.LIL,"-1H:Shady"));
-        action.possibilities.add(Action.build(Player.LIL,"-1S:Shady"));
+        action.possibilities.add(Action.build(Player.LIL, "-1S:Shady"));
         action.possibilities.add(Action.build(Player.LIL,"-2H:Shady"));
 
-        List<Game> gameList = action.perform(game);
+        List<Game> gameList = action.performAllPossibilities(game);
 
-        assertEquals(2, gameList.size());
+        assertEquals(3, gameList.size());
 
         assertEquals("LIL: 2H", gameList.get(0).getPileAsString(Player.LIL));
-        assertEquals("LIL: 1H", gameList.get(1).getPileAsString(Player.LIL));
+        assertEquals(Game.IMPOSSIBLE, gameList.get(1));
+        assertEquals("LIL: 1H", gameList.get(2).getPileAsString(Player.LIL));
+    }
+
+    @Test
+    public void whenLilPassUnknownCardIfPossibilityChosenThenGenerateGame() {
+        game.getPile(Player.LIL).add("1H");
+        game.getPile(Player.LIL).add("2H");
+
+        Action action = Action.build(Player.LIL, "-??:Shady");
+        action.possibilities.add(Action.build(Player.LIL,"-1H:Shady"));
+        action.possibilities.add(Action.build(Player.LIL, "-1S:Shady"));
+        action.possibilities.add(Action.build(Player.LIL, "-2H:Shady"));
+
+        Game game1 = action.perform(game,0);
+        assertEquals("LIL: 2H", game1.getPileAsString(Player.LIL));
+
+        Game game2 = action.perform(game,1);
+        assertEquals(Game.IMPOSSIBLE, game2);
+
+        Game game3 = action.perform(game,2);
+        assertEquals("LIL: 1H", game3.getPileAsString(Player.LIL));
+    }
+    @Test
+    public void whenLilReceivesUnknownCardIfProbabilityChosenThenGenerateGame() {
+        game.getPile(Player.TRANSIT).add("1H");
+        game.getPile(Player.TRANSIT).add("2H");
+
+        Action action = Action.build(Player.LIL, "+??:Shady");
+
+        action.possibilities.add(Action.build(Player.LIL, "+1H:Shady"));
+        action.possibilities.add(Action.build(Player.LIL, "+1S:Shady"));
+        action.possibilities.add(Action.build(Player.LIL, "+2H:Shady"));
+
+        Game game1 = action.perform(game,0);
+        assertEquals("LIL: 1H",game1.getPileAsString(Player.LIL));
+
+        Game game2 = action.perform(game,1);
+        assertEquals(Game.IMPOSSIBLE, game2);
+
+        Game game3 = action.perform(game,2);
+        assertEquals("LIL: 2H", game3.getPileAsString(Player.LIL));
     }
     @Test
     public void whenLilReceivesUnknownCardThenGeneratePossibilities() {
@@ -107,11 +177,46 @@ public class ActionTest {
         action.possibilities.add(Action.build(Player.LIL, "+1S:Shady"));
         action.possibilities.add(Action.build(Player.LIL, "+2H:Shady"));
 
-        List<Game> gameList = action.perform(game);
+        List<Game> gameList = action.performAllPossibilities(game);
 
-        assertEquals(2, gameList.size());
+        assertEquals(3, gameList.size());
 
         assertEquals("LIL: 1H",gameList.get(0).getPileAsString(Player.LIL));
-        assertEquals("LIL: 2H",gameList.get(1).getPileAsString(Player.LIL));
+        assertEquals(Game.IMPOSSIBLE, gameList.get(1));
+        assertEquals("LIL: 2H", gameList.get(2).getPileAsString(Player.LIL));
+    }
+
+    @Test
+    public void whenLilDrawsUnknownIfProbabilityChosenThenReturnGame() {
+
+        Action action = Action.build(Player.LIL, "+??");
+
+        action.possibilities.add(Action.build(Player.LIL, "+1H"));
+        action.possibilities.add(Action.build(Player.LIL, "+1S"));
+        action.possibilities.add(Action.build(Player.LIL, "+2H"));
+
+        Game game1 = action.perform(game,0);
+        assertEquals("LIL: 1H",game1.getPileAsString(Player.LIL));
+
+        Game game2 = action.perform(game,1);
+        assertEquals("LIL: 1S", game2.getPileAsString(Player.LIL));
+    }
+
+    @Test
+    public void whenLilDrawsUnknownCardThenGeneratePossibilities() {
+
+        Action action = Action.build(Player.LIL, "+??");
+
+        action.possibilities.add(Action.build(Player.LIL, "+1H"));
+        action.possibilities.add(Action.build(Player.LIL, "+1S"));
+        action.possibilities.add(Action.build(Player.LIL, "+2H"));
+
+        List<Game> gameList = action.performAllPossibilities(game);
+
+        assertEquals(3, gameList.size());
+
+        assertEquals("LIL: 1H",gameList.get(0).getPileAsString(Player.LIL));
+        assertEquals("LIL: 1S",gameList.get(1).getPileAsString(Player.LIL));
+        assertEquals("LIL: 2H",gameList.get(2).getPileAsString(Player.LIL));
     }
 }

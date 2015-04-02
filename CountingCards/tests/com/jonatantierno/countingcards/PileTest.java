@@ -48,14 +48,14 @@ public class PileTest {
 
         Game game1 = game;
         for(Action action : actions){
-            game1 = action.perform(game1).get(0);
+            game1 = action.performAllPossibilities(game1).get(0);
         }
         game = game1;
     }
 
     @Test
     public void shouldDiscard(){
-        game = Action.build(Player.ROCKY, "-QD:discard").perform(game).get(0);
+        game = Action.build(Player.ROCKY, "-QD:discard").performAllPossibilities(game).get(0);
 
         List<String> rockyHand = game.getPile(Player.ROCKY);
 

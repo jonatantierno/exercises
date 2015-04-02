@@ -13,7 +13,14 @@ public class DiscardAction extends Action{
     }
 
     @Override
-    public List<Game> perform(Game game) {
+    public Game perform(Game game, int possibilityIndex) {
+        // Never with possibilities because always visible.
+        assert false;
+        return null;
+    }
+
+    @Override
+    public Game perform(Game game) {
         Game newGame = game.cloneGame();
 
         List<String> cards = newGame.getPile(player);
@@ -24,7 +31,15 @@ public class DiscardAction extends Action{
         } else if (cards.contains(Game.UNKNOWN_CARD)){
             cards.remove(Game.UNKNOWN_CARD);
             newGame.discard(card);
+        } else {
+            assert false;
         }
-        return Collections.singletonList(newGame);
+        return newGame;
+    }
+
+    @Override
+    public boolean isPossible(Game game) {
+        // Always possible because always visible
+        return true;
     }
 }

@@ -8,6 +8,7 @@ import java.util.*;
 public class Game {
 
     public static final String UNKNOWN_CARD = "??";
+    public static final Game IMPOSSIBLE = new ImpossibleGame();
     private final Map<Player,List<String>> piles;
 
     public Game() {
@@ -49,7 +50,7 @@ public class Game {
     }
 
     public List<Game> perform(Action action) {
-        return action.perform(this);
+        return action.performAllPossibilities(this);
     }
 
     Game cloneGame(){
@@ -70,6 +71,10 @@ public class Game {
 
         return copy;
     }
+
+}
+
+class ImpossibleGame extends Game{
 
 }
 

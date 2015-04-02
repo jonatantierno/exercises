@@ -8,13 +8,13 @@ import java.util.List;
  * Created by jonatan on 31/03/15.
  */
 public class GameNode {
-    final List<Action> actions;
+    final List<Turn> turns;
     final Game game;
 
     List<GameNode> children = new ArrayList<>();
 
-    public GameNode(Game g, List<Action> actions) {
-        this.actions = actions;
+    public GameNode(Game g, List<Turn> turns) {
+        this.turns = turns;
         game = g;
     }
 
@@ -22,23 +22,39 @@ public class GameNode {
         return game.getPileAsString(player);
     }
 
-    public List<GameNode> advanceAction() {
-        Action action = actions.get(0);
-        List<Game> gameList = action.perform(game);
+    public GameNode advanceTurn() {
+        List<Action> actions = turns.get(0).getActions();
 
-        for(Game possibleGame : gameList){
-            children.add(new GameNode(possibleGame, getRemainingActions()));
+        Game newGame = game;
+        for(Action action:actions){
+            newGame = action.perform(newGame);
         }
-        return children;
+        return new GameNode(newGame, turns.subList(1,turns.size()));
     }
 
-    private List<Action> getRemainingActions() {
-        List<Action> nextActions= new ArrayList<Action>();
-        nextActions.addAll(actions.subList(1, actions.size()));
-        return nextActions;
+    public GameNode advanceTurn(int possibilityIndex) {
+        List<Action> actions = turns.get(0).getActions();
+
+        Game newGame = game;
+        for(Action action:actions){
+            if (action.severalPossibilities()){
+                newGame = action.perform(newGame,possibilityIndex);
+            } else {
+                newGame = action.perform(newGame);
+            }
+        }
+        return new GameNode(newGame, turns.subList(1,turns.size()));
     }
 
-    public List<GameNode> advanceTurn() {
-        return null;
+    public boolean isCertain() {
+        return turns.get(0).signals.size() == 0;
+    }
+
+    public Player nextPlayer() {
+        return turns.get(0).getPlayer();
+    }
+
+    public GameNode advanceRound() {
+        return advanceTurn().advanceTurn().advanceTurn().advanceTurn(0);
     }
 }

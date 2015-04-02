@@ -42,9 +42,9 @@ public class ParseTest {
         assertEquals(0,lilsActions.get(0).possibilities.size());
 
         assertEquals(3,lilsActions.get(1).possibilities.size());
-        assertEquals("-JS:Shady",lilsActions.get(1).possibilities.get(0).raw);
-        assertEquals("-2C:Shady",lilsActions.get(1).possibilities.get(1).raw);
-        assertEquals("-QH:Shady",lilsActions.get(1).possibilities.get(2).raw);
+        assertEquals("LIL: -JS:Shady",lilsActions.get(1).possibilities.get(0).toString());
+        assertEquals("LIL: -2C:Shady",lilsActions.get(1).possibilities.get(1).toString());
+        assertEquals("LIL: -QH:Shady",lilsActions.get(1).possibilities.get(2).toString());
 
         assertEquals(0,lilsActions.get(2).possibilities.size());
 

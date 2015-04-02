@@ -17,14 +17,25 @@ public class PassAction extends Action{
     }
 
     @Override
-    public List<Game> perform(Game game) {
-        if (Game.UNKNOWN_CARD.equals(card) && player.equals(Player.LIL)){
-            return performPossibilities(game);
+    public Game perform(Game game, int possibilityIndex) {
+        assert possibilities.size() > possibilityIndex;
+
+        Action possibleAction = possibilities.get(possibilityIndex);
+        assert possibleAction instanceof PassAction;
+
+        // Can Pass the card only if I have it,
+        if(possibleAction.isPossible(game)){
+            Game possibleGame = game.cloneGame();
+            List<String> newHand = possibleGame.getPile(player);
+            newHand.remove(possibleAction.card);
+            possibleGame.passCard(possibleAction.card);
+            return possibleGame;
         }
-        return performSinglePossibility(game);
+        return Game.IMPOSSIBLE;
     }
 
-    private List<Game> performSinglePossibility(Game game) {
+    @Override
+    public Game perform(Game game) {
         Game newGame = game.cloneGame();
         List<String> newHand = newGame.getPile(player);
         if (newHand.contains(card)){
@@ -35,27 +46,14 @@ public class PassAction extends Action{
             assert false;
         }
         newGame.passCard(card);
-        return Collections.singletonList(newGame);
+        return newGame;
     }
 
-    private List<Game> performPossibilities(Game game) {
-        assert possibilities.size() > 0;
 
-        List<Game> gameList = new ArrayList<>();
-
-        for(Action possibleAction: possibilities){
-            assert possibleAction instanceof PassAction;
-
-            // Can Pass the card only if I have it,
-            if(game.getPile(player).contains(possibleAction.card)){
-                Game possibleGame = game.cloneGame();
-
-                List<String> newHand = possibleGame.getPile(player);
-                newHand.remove(possibleAction.card);
-                possibleGame.passCard(possibleAction.card);
-                gameList.add(possibleGame);
-            }
-        }
-        return gameList;
+    @Override
+    public boolean isPossible(Game game) {
+        // Can Pass the card only if I have it,
+        // TODO rest of the possibilities
+        return game.getPile(player).contains(card);
     }
 }

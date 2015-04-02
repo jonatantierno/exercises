@@ -1,11 +1,12 @@
 package com.jonatantierno.countingcards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by jonatan on 30/03/15.
- * This class represents an actions that a player performs in her turn
+ * This class represents an turns that a player performs in her turn
  */
 abstract class Action {
     final String raw;
@@ -44,7 +45,38 @@ abstract class Action {
         return raw.substring(1,cardEndIndex);
     }
 
-    public abstract List<Game> perform(Game game);
+    public List<Game> performAllPossibilities(Game game) {
+        if (severalPossibilities()){
+            return performPossibilities(game);
+        }
+        return Collections.singletonList(perform(game));
+    }
+
+    private List<Game> performPossibilities(Game game) {
+        assert possibilities.size() > 0;
+
+        List<Game> gameList = new ArrayList<>();
+
+        for(int i=0; i<possibilities.size(); i++){
+            gameList.add(perform(game,i));
+        }
+        return gameList;
+    }
+
+    @Override
+    public String toString() {
+        return player.toString() + ": " + raw;
+    }
+
+    public abstract Game perform(Game game, int possibilityIndex);
+    public abstract Game perform(Game game);
+
+    public boolean severalPossibilities() {
+        return Game.UNKNOWN_CARD.equals(card) && player.equals(Player.LIL);
+    }
+
+    public abstract boolean isPossible(Game game);
+
 }
 
 
