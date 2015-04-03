@@ -1,9 +1,12 @@
 package com.jonatantierno.countingcards;
 
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertFalse;
@@ -27,7 +30,7 @@ public class GameTest {
 
         GameNode nextTurn = turn.advanceTurn();
 
-        assertEquals("SHADY: ?? ?? ?? ??", nextTurn.game.getPileAsString(Player.SHADY));
+        assertEquals("SHADY:?? ?? ?? ??", nextTurn.game.getPileAsString(Player.SHADY));
         assertEquals("ROCKY:", nextTurn.game.getPileAsString(Player.ROCKY));
         assertEquals("DANNY:", nextTurn.game.getPileAsString(Player.DANNY));
         assertEquals("LIL:", nextTurn.game.getPileAsString(Player.LIL));
@@ -38,12 +41,12 @@ public class GameTest {
     public void whenFirstRoundShouldDrawCards() {
         GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
 
-        turn.advanceRound();
+        turn = turn.advanceRound();
 
-        assertEquals("SHADY: ?? ?? ?? ??", turn.getPileAsString(Player.SHADY));
-        assertEquals("ROCKY: QH KD 8S 9C", turn.getPileAsString(Player.ROCKY));
-        assertEquals("DANNY: ?? ?? ?? ??", turn.getPileAsString(Player.DANNY));
-        assertEquals("LIL: 8H 9H JS 6H", turn.getPileAsString(Player.LIL));
+        assertEquals("SHADY:?? ?? ?? ??", turn.getPileAsString(Player.SHADY));
+        assertEquals("ROCKY:QH KD 8S 9C", turn.getPileAsString(Player.ROCKY));
+        assertEquals("DANNY:?? ?? ?? ??", turn.getPileAsString(Player.DANNY));
+        assertEquals("LIL:8H 9H JS 6H", turn.getPileAsString(Player.LIL));
 
         assertEquals("DISCARD:", turn.getPileAsString(Player.DISCARD));
     }
@@ -62,12 +65,12 @@ public class GameTest {
 
         turn = turn.advanceTurn(0);
 
-        assertEquals("SHADY: ?? ??", turn.getPileAsString(Player.SHADY));
-        assertEquals("ROCKY: QH 8S 9C 7H", turn.getPileAsString(Player.ROCKY));
-        assertEquals("DANNY: ?? ?? ?? ?? ??", turn.getPileAsString(Player.DANNY));
-        assertEquals("LIL: 9H QS", turn.getPileAsString(Player.LIL));
+        assertEquals("SHADY:?? ??", turn.getPileAsString(Player.SHADY));
+        assertEquals("ROCKY:QH 8S 9C 7H", turn.getPileAsString(Player.ROCKY));
+        assertEquals("DANNY:?? ?? ?? ?? ??", turn.getPileAsString(Player.DANNY));
+        assertEquals("LIL:9H QS", turn.getPileAsString(Player.LIL));
 
-        assertEquals("DISCARD: QD 2S 8H 10S", turn.getPileAsString(Player.DISCARD));
+        assertEquals("DISCARD:QD 2S 8H 10S", turn.getPileAsString(Player.DISCARD));
     }
 
     @Test
@@ -82,5 +85,17 @@ public class GameTest {
 
         assertEquals("ROCKY:",game.getPileAsString(Player.ROCKY));
         assertEquals("SHADY:",game.getPileAsString(Player.SHADY));
+    }
+
+    @Test
+    public void sampleShouldWork() throws FileNotFoundException {
+        GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
+
+        Scanner scanner = new Scanner(new File("res/SAMPLE_SOLUTION.txt")).useDelimiter("\\n");
+
+        while(turn.moreRounds()){
+            turn = turn.advanceRound();
+            assertEquals(scanner.next(),turn.getResultAsString());
+        }
     }
 }

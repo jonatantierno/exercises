@@ -57,4 +57,12 @@ public class GameNode {
     public GameNode advanceRound() {
         return advanceTurn().advanceTurn().advanceTurn().advanceTurn(0);
     }
+
+    public String getResultAsString() {
+        return game.getPileAsStringNoName(Player.LIL);
+    }
+
+    public boolean moreRounds() {
+        return turns.size()/4>0;
+    }
 }

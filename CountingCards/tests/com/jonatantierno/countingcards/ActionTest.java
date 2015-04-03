@@ -122,9 +122,9 @@ public class ActionTest {
 
         assertEquals(3, gameList.size());
 
-        assertEquals("LIL: 2H", gameList.get(0).getPileAsString(Player.LIL));
+        assertEquals("LIL:2H", gameList.get(0).getPileAsString(Player.LIL));
         assertEquals(Game.IMPOSSIBLE, gameList.get(1));
-        assertEquals("LIL: 1H", gameList.get(2).getPileAsString(Player.LIL));
+        assertEquals("LIL:1H", gameList.get(2).getPileAsString(Player.LIL));
     }
 
     @Test
@@ -138,13 +138,13 @@ public class ActionTest {
         action.possibilities.add(Action.build(Player.LIL, "-2H:Shady"));
 
         Game game1 = action.perform(game,0);
-        assertEquals("LIL: 2H", game1.getPileAsString(Player.LIL));
+        assertEquals("LIL:2H", game1.getPileAsString(Player.LIL));
 
         Game game2 = action.perform(game,1);
         assertEquals(Game.IMPOSSIBLE, game2);
 
         Game game3 = action.perform(game,2);
-        assertEquals("LIL: 1H", game3.getPileAsString(Player.LIL));
+        assertEquals("LIL:1H", game3.getPileAsString(Player.LIL));
     }
     @Test
     public void whenLilReceivesUnknownCardIfProbabilityChosenThenGenerateGame() {
@@ -158,13 +158,13 @@ public class ActionTest {
         action.possibilities.add(Action.build(Player.LIL, "+2H:Shady"));
 
         Game game1 = action.perform(game,0);
-        assertEquals("LIL: 1H",game1.getPileAsString(Player.LIL));
+        assertEquals("LIL:1H",game1.getPileAsString(Player.LIL));
 
         Game game2 = action.perform(game,1);
         assertEquals(Game.IMPOSSIBLE, game2);
 
         Game game3 = action.perform(game,2);
-        assertEquals("LIL: 2H", game3.getPileAsString(Player.LIL));
+        assertEquals("LIL:2H", game3.getPileAsString(Player.LIL));
     }
     @Test
     public void whenLilReceivesUnknownCardThenGeneratePossibilities() {
@@ -181,9 +181,9 @@ public class ActionTest {
 
         assertEquals(3, gameList.size());
 
-        assertEquals("LIL: 1H",gameList.get(0).getPileAsString(Player.LIL));
+        assertEquals("LIL:1H",gameList.get(0).getPileAsString(Player.LIL));
         assertEquals(Game.IMPOSSIBLE, gameList.get(1));
-        assertEquals("LIL: 2H", gameList.get(2).getPileAsString(Player.LIL));
+        assertEquals("LIL:2H", gameList.get(2).getPileAsString(Player.LIL));
     }
 
     @Test
@@ -196,10 +196,10 @@ public class ActionTest {
         action.possibilities.add(Action.build(Player.LIL, "+2H"));
 
         Game game1 = action.perform(game,0);
-        assertEquals("LIL: 1H",game1.getPileAsString(Player.LIL));
+        assertEquals("LIL:1H",game1.getPileAsString(Player.LIL));
 
         Game game2 = action.perform(game,1);
-        assertEquals("LIL: 1S", game2.getPileAsString(Player.LIL));
+        assertEquals("LIL:1S", game2.getPileAsString(Player.LIL));
     }
 
     @Test
@@ -215,8 +215,8 @@ public class ActionTest {
 
         assertEquals(3, gameList.size());
 
-        assertEquals("LIL: 1H",gameList.get(0).getPileAsString(Player.LIL));
-        assertEquals("LIL: 1S",gameList.get(1).getPileAsString(Player.LIL));
-        assertEquals("LIL: 2H",gameList.get(2).getPileAsString(Player.LIL));
+        assertEquals("LIL:1H",gameList.get(0).getPileAsString(Player.LIL));
+        assertEquals("LIL:1S",gameList.get(1).getPileAsString(Player.LIL));
+        assertEquals("LIL:2H",gameList.get(2).getPileAsString(Player.LIL));
     }
 }

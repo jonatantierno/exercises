@@ -31,17 +31,31 @@ public class Game {
         piles.get(Player.TRANSIT).remove(card);
     }
 
+    public String getPileAsStringNoName(Player player) {
+        List<String> pile= piles.get(player);
+
+        StringBuffer sb = new StringBuffer();
+
+        boolean first = true;
+        for(String card : pile){
+            if (first){
+                first = false;
+            }
+            else {
+                sb.append(' ');
+            }
+            sb.append(card);
+        }
+        return sb.toString();
+    }
+
     public String getPileAsString(Player player) {
         StringBuffer sb = new StringBuffer();
         sb.append(player.toString());
         sb.append(':');
 
-        List<String> pile= piles.get(player);
+        sb.append(getPileAsStringNoName(player));
 
-        for(String card : pile){
-            sb.append(' ');
-            sb.append(card);
-        }
         return sb.toString();
     }
 

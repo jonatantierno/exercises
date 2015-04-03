@@ -34,9 +34,7 @@ public class DrawAction extends Action{
     @Override
     public Game perform(Game game) {
         Game newGame = game.cloneGame();
-        List<String> cards = newGame.getPile(player);
-
-        cards.add(card);
+        newGame.getPile(player).add(card);
         return newGame;
     }
 

@@ -47,6 +47,6 @@ public class ReceiveAction extends Action{
     public boolean isPossible(Game game) {
         // Can Receive the card only if in Transit,
         // TODO rest of the possibilities
-        return game.getPile(Player.TRANSIT).contains(card);
+        return game.getPile(Player.TRANSIT).contains(card) ||game.getPile(Player.TRANSIT).contains(Game.UNKNOWN_CARD);
     }
 }
