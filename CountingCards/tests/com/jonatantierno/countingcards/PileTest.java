@@ -6,10 +6,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.fail;
-import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Test for modifying a player's hand with moves
@@ -37,8 +35,6 @@ public class PileTest {
 
     private void setInitialHand() {
         game = new Game();
-        game.add(Player.ROCKY);
-        game.add(Player.DISCARD);
 
         List<Action> actions= new ArrayList<>();
         actions.add(Action.build(Player.ROCKY, "+QD"));

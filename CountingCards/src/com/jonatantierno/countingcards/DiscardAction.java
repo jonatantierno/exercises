@@ -32,7 +32,7 @@ public class DiscardAction extends Action{
             cards.remove(Game.UNKNOWN_CARD);
             newGame.discard(card);
         } else {
-            assert false;
+            return Game.IMPOSSIBLE;
         }
         return newGame;
     }

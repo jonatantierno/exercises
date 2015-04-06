@@ -21,12 +21,16 @@ public class ReceiveAction extends Action{
         assert possibilities.size() > possibilityIndex;
 
         Action possibleAction = possibilities.get(possibilityIndex);
-        assert possibleAction instanceof ReceiveAction;
+
+        if (invalidPossibility(possibleAction)){
+            return Game.IMPOSSIBLE;
+        }
 
         if (possibleAction.isPossible(game)){
             Game possibleGame = game.cloneGame();
             possibleGame.getPile(player).add(possibleAction.card);
-            possibleGame.receiveCard(possibleAction.card);
+            possibleGame.getPile(sender).remove(possibleAction.card);
+            possibleGame.receiveCard(card);
 
             return possibleGame;
         } else {
@@ -34,19 +38,34 @@ public class ReceiveAction extends Action{
         }
     }
 
+    private boolean invalidPossibility(Action possibleAction) {
+        if(!(possibleAction instanceof ReceiveAction)){
+            return true;
+        }
+        return !((ReceiveAction)possibleAction).sender.equals(sender);
+    }
+
     @Override
     public Game perform(Game game) {
         Game newGame = game.cloneGame();
-        newGame.getPile(player).add(card);
+
         newGame.receiveCard(card);
+
+        newGame.getPile(player).add(card);
 
         return newGame;
     }
 
     @Override
     public boolean isPossible(Game game) {
-        // Can Receive the card only if in Transit,
-        // TODO rest of the possibilities
-        return game.getPile(Player.TRANSIT).contains(card) ||game.getPile(Player.TRANSIT).contains(Game.UNKNOWN_CARD);
+        // Can Receive the card only if in Transit, or if sender has it.
+        if(game.getPile(sender).contains(card)){
+            return true;
+        }
+        if(game.anybodyElseHasCard(Player.TRANSIT,card)){
+            return false;
+        }
+        return game.getPile(Player.TRANSIT).contains(card) ||
+                game.getPile(Player.TRANSIT).contains(Game.UNKNOWN_CARD);
     }
 }

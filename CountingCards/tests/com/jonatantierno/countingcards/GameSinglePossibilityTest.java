@@ -1,47 +1,43 @@
 package com.jonatantierno.countingcards;
 
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Scanner;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for processing the sample_input file
  */
-public class GameTest {
+public class GameSinglePossibilityTest {
     CountingCards objectUnderTest;
+    GameNode initialTurn;
 
     @Before
-    public void setup(){
-        objectUnderTest = new CountingCards();
-        objectUnderTest.parse(new String[]{"res/SAMPLE_INPUT.txt"});
+    public void setup() throws FileNotFoundException {
+        initialTurn = CountingCards.parse("res/SAMPLE_INPUT.txt");
     }
 
     @Test
     public void whenFirstTurnShouldDrawCards() {
-        GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
+        GameNode turn = initialTurn.calculateNodeChildren(0);
 
-        GameNode nextTurn = turn.advanceTurn();
-
-        assertEquals("SHADY:?? ?? ?? ??", nextTurn.game.getPileAsString(Player.SHADY));
-        assertEquals("ROCKY:", nextTurn.game.getPileAsString(Player.ROCKY));
-        assertEquals("DANNY:", nextTurn.game.getPileAsString(Player.DANNY));
-        assertEquals("LIL:", nextTurn.game.getPileAsString(Player.LIL));
+        assertEquals("SHADY:?? ?? ?? ??", turn.game.getPileAsString(Player.SHADY));
+        assertEquals("ROCKY:", turn.game.getPileAsString(Player.ROCKY));
+        assertEquals("DANNY:", turn.game.getPileAsString(Player.DANNY));
+        assertEquals("LIL:", turn.game.getPileAsString(Player.LIL));
 
         assertEquals("DISCARD:", turn.game.getPileAsString(Player.DISCARD));
     }
     @Test
     public void whenFirstRoundShouldDrawCards() {
-        GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
-
-        turn = turn.advanceRound();
+        GameNode turn = initialTurn.advanceRound();
 
         assertEquals("SHADY:?? ?? ?? ??", turn.getPileAsString(Player.SHADY));
         assertEquals("ROCKY:QH KD 8S 9C", turn.getPileAsString(Player.ROCKY));
@@ -52,18 +48,16 @@ public class GameTest {
     }
     @Test
     public void whenSecondRoundAndChooseOnePossibilityThenOk() {
-        GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
-
         // First Round
-        turn = turn.advanceRound();
+        GameNode turn = initialTurn.advanceRound();
 
         // Second Round
-        turn = turn.advanceTurn().advanceTurn().advanceTurn();
+        turn = turn.calculateNodeChildren(0).calculateNodeChildren(0).calculateNodeChildren(0);
 
-        assertEquals(Player.LIL, turn.nextPlayer());
+        assertEquals(Player.LIL, turn.getNextPlayer());
         assertFalse(turn.isCertain());
 
-        turn = turn.advanceTurn(0);
+        turn = turn.calculateNodeChildren(0);
 
         assertEquals("SHADY:?? ??", turn.getPileAsString(Player.SHADY));
         assertEquals("ROCKY:QH 8S 9C 7H", turn.getPileAsString(Player.ROCKY));
@@ -76,9 +70,6 @@ public class GameTest {
     @Test
     public void shouldHaveNoEffect(){
         Game game = new Game();
-        game.add(Player.ROCKY);
-        game.add(Player.SHADY);
-        game.add(Player.TRANSIT);
 
         game = game.perform(Action.build(Player.ROCKY, "+7C")).get(0);
         game = game.perform(Action.build(Player.ROCKY, "-7C:Shady")).get(0);
@@ -89,13 +80,20 @@ public class GameTest {
 
     @Test
     public void sampleShouldWork() throws FileNotFoundException {
-        GameNode turn = new GameNode(objectUnderTest.game,objectUnderTest.getLinesRead());
+        Scanner expectedScanner = new Scanner(new File("res/SAMPLE_SOLUTION.txt")).useDelimiter("\\n");
 
-        Scanner scanner = new Scanner(new File("res/SAMPLE_SOLUTION.txt")).useDelimiter("\\n");
+        List<GameNode> nodeList = initialTurn.createSolutionTree();
 
-        while(turn.moreRounds()){
-            turn = turn.advanceRound();
-            assertEquals(scanner.next(),turn.getResultAsString());
+        assertEquals(1, nodeList.size());
+
+
+        String resultAsString = nodeList.get(0).getResultAsString();
+        Scanner actualScanner = new Scanner(resultAsString).useDelimiter("\\n");
+
+        while(expectedScanner.hasNext()) {
+            assertTrue(actualScanner.hasNext());
+
+            assertEquals(expectedScanner.nextLine(), actualScanner.nextLine());
         }
     }
 }

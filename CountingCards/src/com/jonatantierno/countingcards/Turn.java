@@ -7,6 +7,7 @@ import java.util.*;
  * Created by jonatan on 30/03/15.
  */
 class Turn {
+
     private final String raw;
     private final Player player;
     private final List<Action> actions = new ArrayList<Action>();
@@ -19,7 +20,7 @@ class Turn {
 
         player = Player.getPlayerFromString(scanner.next());
 
-        if (invalidPlayer()){
+        if (player == null){
             throw new RuntimeException("Invalid Format: player string");
         }
 
@@ -27,18 +28,6 @@ class Turn {
             actions.add(Action.build(player, scanner.next()));
         }
 
-    }
-
-    private boolean invalidPlayer() {
-        return player == null || player.equals(Player.NONE);
-    }
-
-    boolean isTurn(){
-        return !isSignal();
-    }
-
-    boolean isSignal() {
-        return player.equals(Player.SIGNAL);
     }
 
     public Player getPlayer() {
@@ -50,15 +39,33 @@ class Turn {
     }
 
     public void addSignal(Player p, Turn signalLine) {
-        signals.add(signalLine);
+        if (badNumberOfActions(signalLine)){
+            return;
+        }
 
         Iterator<Action> realActionIterator = actions.iterator();
 
         for(Action signaledAction:signalLine.actions){
             Action hiddenAction = getNextHiddenAction(realActionIterator);
 
-            hiddenAction.possibilities.add(Action.build(p,signaledAction.raw));
+            hiddenAction.possibilities.add(Action.build(p, signaledAction.raw));
+
         }
+        signals.add(signalLine);
+    }
+
+    private boolean badNumberOfActions(Turn signalLine) {
+        return numberOfHiddenActions() != signalLine.actions.size();
+    }
+
+    private int numberOfHiddenActions() {
+        int hiddenActions = 0;
+        for(Action action : actions){
+           if (action.card.equals(Game.UNKNOWN_CARD)){
+               hiddenActions++;
+           }
+        }
+        return hiddenActions;
     }
 
     private Action getNextHiddenAction(Iterator<Action> realActionIterator) {
@@ -68,5 +75,15 @@ class Turn {
             realAction = realActionIterator.next();
         }
         return realAction;
+    }
+
+    public int getNumberOfPossibilities() {
+        int max = 0;
+        for(Action action :actions){
+            if (action.possibilities.size() > max){
+                max =action.possibilities.size();
+            }
+        }
+        return max;
     }
 }

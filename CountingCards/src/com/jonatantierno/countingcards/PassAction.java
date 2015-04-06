@@ -1,5 +1,7 @@
 package com.jonatantierno.countingcards;
 
+import org.omg.CORBA.UNKNOWN;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +23,10 @@ public class PassAction extends Action{
         assert possibilities.size() > possibilityIndex;
 
         Action possibleAction = possibilities.get(possibilityIndex);
-        assert possibleAction instanceof PassAction;
+
+        if (invalidPossibility(possibleAction)){
+            return Game.IMPOSSIBLE;
+        }
 
         // Can Pass the card only if I have it,
         if(possibleAction.isPossible(game)){
@@ -34,6 +39,13 @@ public class PassAction extends Action{
         return Game.IMPOSSIBLE;
     }
 
+    private boolean invalidPossibility(Action possibleAction) {
+        if(!(possibleAction instanceof PassAction)){
+            return true;
+        }
+        return !((PassAction)possibleAction).recipient.equals(recipient);
+    }
+
     @Override
     public Game perform(Game game) {
         Game newGame = game.cloneGame();
@@ -43,7 +55,8 @@ public class PassAction extends Action{
         } else if (newHand.contains(Game.UNKNOWN_CARD)){
             newHand.remove(Game.UNKNOWN_CARD);
         } else {
-            assert false;
+            // Do not remove anything.
+            // This should never happen, but it does in SAMPLE_INPUT_2.txt
         }
         newGame.passCard(card);
         return newGame;
@@ -53,7 +66,11 @@ public class PassAction extends Action{
     @Override
     public boolean isPossible(Game game) {
         // Can Pass the card only if I have it,
-        // TODO rest of the possibilities
-        return game.getPile(player).contains(card);
+
+        if (game.anybodyElseHasCard(player,card)){
+            return false;
+        }
+        return game.getPile(player).contains(card) ||
+               game.getPile(player).contains(Game.UNKNOWN_CARD) ;
     }
 }

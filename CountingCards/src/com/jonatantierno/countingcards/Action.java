@@ -9,6 +9,7 @@ import java.util.List;
  * This class represents an turns that a player performs in her turn
  */
 abstract class Action {
+    public static  final Action NULL = new NullAction();
     final String raw;
     final String card;
     final Player player;
@@ -77,6 +78,41 @@ abstract class Action {
 
     public abstract boolean isPossible(Game game);
 
+    public Game performSomehow(Game game, int possibilityIndex) {
+        Game newGame;
+        if (severalPossibilities()){
+            newGame = perform(game,possibilityIndex);
+        } else {
+            newGame = perform(game);
+        }
+        return newGame;
+    }
+
+    /**
+     * Null pattern
+     */
+    private static final class NullAction extends Action{
+
+        NullAction() {
+            super(Player.NONE, "+00");
+        }
+
+        @Override
+        public Game perform(Game game, int possibilityIndex) {
+            return Game.IMPOSSIBLE;
+        }
+
+        @Override
+        public Game perform(Game game) {
+            return Game.IMPOSSIBLE;
+        }
+
+        @Override
+        public boolean isPossible(Game game) {
+            return false;
+        }
+    }
 }
+
 
 

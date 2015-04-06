@@ -13,9 +13,16 @@ public class Game {
 
     public Game() {
         this.piles = new HashMap<>();
+
+        add(Player.SHADY);
+        add(Player.ROCKY);
+        add(Player.DANNY);
+        add(Player.LIL);
+        add(Player.DISCARD);
+        add(Player.TRANSIT);
     }
 
-    public void add(Player player){
+    private void add(Player player){
         piles.put(player, new ArrayList<String>());
     }
 
@@ -86,9 +93,29 @@ public class Game {
         return copy;
     }
 
+    public boolean isInPlay(String card) {
+        return getPile(Player.LIL).contains(card) ||
+                getPile(Player.ROCKY).contains(card) ||
+                getPile(Player.DANNY).contains(card) ||
+                getPile(Player.SHADY).contains(card) ||
+                getPile(Player.TRANSIT).contains(card) ||
+                getPile(Player.DISCARD).contains(card);
+    }
+
+    public boolean anybodyElseHasCard(Player player, String card){
+        return isInPlay(card) && !getPile(player).contains(card);
+    }
+
+    private static final class ImpossibleGame extends Game{
+        private ImpossibleGame(){
+            super();
+        }
+
+        @Override
+        public String getPileAsStringNoName(Player player) {
+            return "IMPOSSIBLE GAME!";
+        }
+    }
 }
 
-class ImpossibleGame extends Game{
-
-}
 

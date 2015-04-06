@@ -1,6 +1,7 @@
 package com.jonatantierno.countingcards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -8,61 +9,146 @@ import java.util.List;
  * Created by jonatan on 31/03/15.
  */
 public class GameNode {
-    final List<Turn> turns;
+    private static final GameNode IMPOSSIBLE = new GameNode(Player.NONE, Game.IMPOSSIBLE,Collections.<Turn>emptyList(),null);
+
+    final List<Turn> turns; // This should be an immutable list...
     final Game game;
+    List<GameNode> children;
+    public final GameNode parent;
+    public final Player player;
 
-    List<GameNode> children = new ArrayList<>();
+    public GameNode(Player player, Game g, List<Turn> turns) {
+        this(player, g,turns,GameNode.IMPOSSIBLE);
+    }
 
-    public GameNode(Game g, List<Turn> turns) {
+    public GameNode(Player player, Game g, List<Turn> turns, GameNode parent) {
         this.turns = turns;
         game = g;
+        children = null;
+        this.parent = parent;
+        this.player = player;
+
+    }
+
+    /**
+     * This method creates the tree and calculates the solutions with a backtracking algorithm.
+     * @return list of leaves of the tree that contain a valid solution.
+     */
+    public List<GameNode> createSolutionTree() {
+        if (!moreRounds()){
+            return Collections.emptyList();
+        }
+
+        this.children = calculateNodeChildren();
+
+        List<GameNode> solutions = new ArrayList<>();
+        for (GameNode node : children) {
+            if (node.isSolution()) {
+                solutions.add(node);
+            } else {
+                solutions.addAll(node.createSolutionTree());
+            }
+        }
+
+        return solutions;
+    }
+
+    /**
+     * Tells if this is a leaf with a valid solution.
+     * @return true if valid solution.
+     */
+    private boolean isSolution() {
+        return !moreRounds() && !game.equals(Game.IMPOSSIBLE);
+    }
+
+    /**
+     * This recursive method prints the solution with the OUTPUT format.
+     * Navigates the tree from the leaf to the root.
+     * @return solution as a String with several lines.
+     */
+    public String getResultAsString() {
+        String s = "";
+        if (player.equals(Player.LIL)) {
+            s = game.getPileAsStringNoName(Player.LIL);
+        }
+
+        String prev = "";
+        if (parent != GameNode.IMPOSSIBLE) {
+            prev = parent.getResultAsString();
+        }
+
+        String delimiter = "";
+        if (!prev.isEmpty() && !s.isEmpty()){
+            delimiter = "\n";
+        }
+
+        return prev+ delimiter +s;
     }
 
     public String getPileAsString(Player player) {
         return game.getPileAsString(player);
     }
 
-    public GameNode advanceTurn() {
-        List<Action> actions = turns.get(0).getActions();
 
-        Game newGame = game;
-        for(Action action:actions){
-            newGame = action.perform(newGame);
-        }
-        return new GameNode(newGame, turns.subList(1,turns.size()));
-    }
+    public List<GameNode> calculateNodeChildren() {
+        ArrayList<GameNode> possibleGames = new ArrayList<>();
 
-    public GameNode advanceTurn(int possibilityIndex) {
-        List<Action> actions = turns.get(0).getActions();
+        int numberOfPossibilities = getNextTurn().getNumberOfPossibilities();
 
-        Game newGame = game;
-        for(Action action:actions){
-            if (action.severalPossibilities()){
-                newGame = action.perform(newGame,possibilityIndex);
-            } else {
-                newGame = action.perform(newGame);
+        if (numberOfPossibilities > 0){
+            for(int i = 0; i< numberOfPossibilities; i++){
+                GameNode result = calculateNodeChildren(i);
+                possibleGames.add(result);
             }
         }
-        return new GameNode(newGame, turns.subList(1,turns.size()));
+        else {
+            possibleGames.add(calculateNodeChildren(0));
+        }
+
+        return possibleGames;
+    }
+
+    private Turn getNextTurn() {
+        return turns.get(0);
+    }
+
+    public GameNode calculateNodeChildren(int possibilityIndex) {
+        List<Action> actions = getNextTurn().getActions();
+
+        Game newGame = game;
+        for(Action action:actions){
+            newGame = action.performSomehow(newGame,possibilityIndex);
+
+            if(newGame.equals(Game.IMPOSSIBLE)){
+                return GameNode.IMPOSSIBLE;
+            }
+        }
+        return new GameNode(getNextPlayer(), newGame, turns.subList(1,turns.size()),this);
     }
 
     public boolean isCertain() {
-        return turns.get(0).signals.size() == 0;
+        return getNextTurn().signals.size() == 0;
     }
 
-    public Player nextPlayer() {
-        return turns.get(0).getPlayer();
+    Player getNextPlayer() {
+        return getNextTurn().getPlayer();
     }
 
-    public GameNode advanceRound() {
-        return advanceTurn().advanceTurn().advanceTurn().advanceTurn(0);
+    GameNode advanceRound() {
+        Player firstPlayerInRound = getNextPlayer();
+
+        GameNode node = calculateNodeChildren(0);
+
+        while(node.moreRounds() &&
+                !firstPlayerInRound.equals(node.getNextPlayer())){
+            node = node.calculateNodeChildren(0);
+        }
+        return node;
+
     }
 
-    public String getResultAsString() {
-        return game.getPileAsStringNoName(Player.LIL);
-    }
 
-    public boolean moreRounds() {
-        return turns.size()/4>0;
+    boolean moreRounds() {
+        return turns.size()>0;
     }
 }

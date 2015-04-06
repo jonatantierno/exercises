@@ -56,8 +56,10 @@ public class DrawAction extends Action{
 
     @Override
     public boolean isPossible(Game game) {
-        // Always Possible
-        // TODO rest of possibilities
+        if (game.isInPlay(card)){
+            return false;
+        }
         return true;
     }
+
 }
