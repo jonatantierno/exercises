@@ -1,5 +1,6 @@
 package com.jonatantierno.countingcards;
 
+import com.jonatantierno.countingcards.actions.Action;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -65,17 +66,6 @@ public class GameSinglePossibilityTest {
         assertEquals("LIL:9H QS", turn.getPileAsString(Player.LIL));
 
         assertEquals("DISCARD:QD 2S 8H 10S", turn.getPileAsString(Player.DISCARD));
-    }
-
-    @Test
-    public void shouldHaveNoEffect(){
-        Game game = new Game();
-
-        game = game.perform(Action.build(Player.ROCKY, "+7C")).get(0);
-        game = game.perform(Action.build(Player.ROCKY, "-7C:Shady")).get(0);
-
-        assertEquals("ROCKY:",game.getPileAsString(Player.ROCKY));
-        assertEquals("SHADY:",game.getPileAsString(Player.SHADY));
     }
 
     @Test

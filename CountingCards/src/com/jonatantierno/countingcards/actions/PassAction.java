@@ -1,16 +1,15 @@
-package com.jonatantierno.countingcards;
+package com.jonatantierno.countingcards.actions;
 
-import org.omg.CORBA.UNKNOWN;
+import com.jonatantierno.countingcards.Game;
+import com.jonatantierno.countingcards.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by jonatan on 31/03/15.
  */
 public class PassAction extends Action{
-    final Player recipient;
+    public final Player recipient;
 
     public PassAction(Player p, String raw) {
         super(p, raw);
@@ -19,7 +18,7 @@ public class PassAction extends Action{
     }
 
     @Override
-    public Game perform(Game game, int possibilityIndex) {
+    public Game performPossibility(Game game, int possibilityIndex) {
         assert possibilities.size() > possibilityIndex;
 
         Action possibleAction = possibilities.get(possibilityIndex);
@@ -47,9 +46,14 @@ public class PassAction extends Action{
     }
 
     @Override
-    public Game perform(Game game) {
+    public Game performCertain(Game game) {
         Game newGame = game.cloneGame();
         List<String> newHand = newGame.getPile(player);
+
+        if (!isPossible(game)){
+            return Game.IMPOSSIBLE;
+        }
+
         if (newHand.contains(card)){
             newHand.remove(card);
         } else if (newHand.contains(Game.UNKNOWN_CARD)){
@@ -60,17 +64,25 @@ public class PassAction extends Action{
         }
         newGame.passCard(card);
         return newGame;
+
     }
 
 
     @Override
     public boolean isPossible(Game game) {
         // Can Pass the card only if I have it,
-
-        if (game.anybodyElseHasCard(player,card)){
+        if (game.anybodyElseHasCard(player,card) && !game.getPile(Player.TRANSIT).contains(card)){
             return false;
         }
-        return game.getPile(player).contains(card) ||
-               game.getPile(player).contains(Game.UNKNOWN_CARD) ;
+        if (game.getPile(player).contains(card)){
+            return true;
+        }
+        if (game.getPile(player).contains(Game.UNKNOWN_CARD)){
+            return true;
+        }
+        if (card.equals(Game.UNKNOWN_CARD) && game.getPile(player).size()>0){
+            return true;
+        }
+        return false;
     }
 }

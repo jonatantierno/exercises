@@ -1,5 +1,7 @@
 package com.jonatantierno.countingcards;
 
+import com.jonatantierno.countingcards.actions.Action;
+
 import java.util.*;
 
 /**
@@ -70,11 +72,7 @@ public class Game {
         return piles.get(player);
     }
 
-    public List<Game> perform(Action action) {
-        return action.performAllPossibilities(this);
-    }
-
-    Game cloneGame(){
+    public Game cloneGame(){
         Game clone = new Game();
         Iterator<Player> keys = piles.keySet().iterator();
 
@@ -84,13 +82,6 @@ public class Game {
             clone.getPile(key).addAll(piles.get(key));
         }
         return clone;
-    }
-
-    private List<String> copyPile(List<String> pile){
-        List<String> copy = new ArrayList<>(pile.size());
-        copy.addAll(pile);
-
-        return copy;
     }
 
     public boolean isInPlay(String card) {

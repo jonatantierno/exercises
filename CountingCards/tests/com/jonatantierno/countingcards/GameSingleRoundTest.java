@@ -1,5 +1,6 @@
 package com.jonatantierno.countingcards;
 
+import com.jonatantierno.countingcards.actions.ActionFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -71,10 +72,10 @@ public class GameSingleRoundTest {
 
         assertEquals(0, impossibleTurn.getNumberOfPossibilities());
 
-        impossibleTurn.getActions().get(0).possibilities.add(Action.build(Player.LIL, "+5H"));
+        impossibleTurn.getActions().get(0).possibilities.add(ActionFactory.build(Player.LIL, "+5H"));
         assertEquals(1, impossibleTurn.getNumberOfPossibilities());
 
-        impossibleTurn.getActions().get(0).possibilities.add(Action.build(Player.LIL, "+7H"));
+        impossibleTurn.getActions().get(0).possibilities.add(ActionFactory.build(Player.LIL, "+7H"));
         assertEquals(2, impossibleTurn.getNumberOfPossibilities());
     }
     @Test
@@ -83,8 +84,8 @@ public class GameSingleRoundTest {
         game.getPile(Player.LIL).add("6H");
 
         Turn impossibleTurn = new Turn("Lil +??");
-        impossibleTurn.getActions().get(0).possibilities.add(Action.build(Player.LIL,"+5H"));
-        impossibleTurn.getActions().get(0).possibilities.add(Action.build(Player.LIL,"+7H"));
+        impossibleTurn.getActions().get(0).possibilities.add(ActionFactory.build(Player.LIL, "+5H"));
+        impossibleTurn.getActions().get(0).possibilities.add(ActionFactory.build(Player.LIL, "+7H"));
 
         GameNode gameNode = new GameNode(Player.NONE, game, Collections.singletonList(impossibleTurn));
 
@@ -100,7 +101,7 @@ public class GameSingleRoundTest {
         game.getPile(Player.LIL).add("6H");
 
         Turn impossibleTurn = new Turn("Lil +??");
-        impossibleTurn.getActions().get(0).possibilities.add(Action.build(Player.LIL,"+6H"));
+        impossibleTurn.getActions().get(0).possibilities.add(ActionFactory.build(Player.LIL, "+6H"));
 
         GameNode gameNode = new GameNode(Player.NONE, game, Collections.singletonList(impossibleTurn));
 

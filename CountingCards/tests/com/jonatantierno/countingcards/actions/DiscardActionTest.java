@@ -1,9 +1,9 @@
-package com.jonatantierno.countingcards;
+package com.jonatantierno.countingcards.actions;
 
+import com.jonatantierno.countingcards.Game;
+import com.jonatantierno.countingcards.Player;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,19 +19,19 @@ public class DiscardActionTest {
     public void setup(){
         game= new Game();
 
-        game = Action.build(Player.ROCKY, "+7H").performAllPossibilities(game).get(0);
+        game = ActionFactory.build(Player.ROCKY, "+7H").performCertain(game);
     }
     @Test
     public void whenDiscardThenAddToDiscardPile(){
 
-        game = Action.build(Player.ROCKY, "-7H:discard").perform(game);
+        game = ActionFactory.build(Player.ROCKY, "-7H:discard").performCertain(game);
 
         assertTrue(game.getPile(Player.DISCARD).contains("7H"));
     }
     @Test
     public void whenDiscardAndPossibilitiesThenAddToDiscardPile(){
 
-        game = Action.build(Player.ROCKY, "-7H:discard").performAllPossibilities(game).get(0);
+        game = ActionFactory.build(Player.ROCKY, "-7H:discard").performCertain(game);
 
         assertTrue(game.getPile(Player.DISCARD).contains("7H"));
     }
@@ -40,7 +40,7 @@ public class DiscardActionTest {
     public void whenDiscardAndCardUnknownThenAddToDiscardPile(){
         game.getPile(Player.ROCKY).add(Game.UNKNOWN_CARD);
 
-        game = Action.build(Player.ROCKY, "-7C:discard").performAllPossibilities(game).get(0);
+        game = ActionFactory.build(Player.ROCKY, "-7C:discard").performCertain(game);
 
         assertEquals(1, game.getPile(Player.ROCKY).size());
         assertTrue(game.getPile(Player.DISCARD).contains("7C"));

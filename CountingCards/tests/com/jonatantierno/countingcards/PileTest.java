@@ -1,5 +1,7 @@
 package com.jonatantierno.countingcards;
 
+import com.jonatantierno.countingcards.actions.Action;
+import com.jonatantierno.countingcards.actions.ActionFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +22,23 @@ public class PileTest {
     public void setup(){
         setInitialHand();
     }
+
+    private void setInitialHand() {
+        game = new Game();
+
+        List<Action> actions= new ArrayList<>();
+        actions.add(ActionFactory.build(Player.ROCKY, "+QD"));
+        actions.add(ActionFactory.build(Player.ROCKY, "+7S"));
+        actions.add(ActionFactory.build(Player.ROCKY, "+6C"));
+        actions.add(ActionFactory.build(Player.ROCKY, "+AH"));
+
+        Game game1 = game;
+        for(Action action : actions){
+            game1 = action.performCertain(game1);
+        }
+        game = game1;
+    }
+
     @Test
     public void shouldGetCards(){
 
@@ -33,25 +52,9 @@ public class PileTest {
         assertEquals("AH", rockyHand.get(3));
     }
 
-    private void setInitialHand() {
-        game = new Game();
-
-        List<Action> actions= new ArrayList<>();
-        actions.add(Action.build(Player.ROCKY, "+QD"));
-        actions.add(Action.build(Player.ROCKY, "+7S"));
-        actions.add(Action.build(Player.ROCKY, "+6C"));
-        actions.add(Action.build(Player.ROCKY, "+AH"));
-
-        Game game1 = game;
-        for(Action action : actions){
-            game1 = action.performAllPossibilities(game1).get(0);
-        }
-        game = game1;
-    }
-
     @Test
     public void shouldDiscard(){
-        game = Action.build(Player.ROCKY, "-QD:discard").performAllPossibilities(game).get(0);
+        game = ActionFactory.build(Player.ROCKY, "-QD:discard").performCertain(game);
 
         List<String> rockyHand = game.getPile(Player.ROCKY);
 

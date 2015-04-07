@@ -1,6 +1,8 @@
-package com.jonatantierno.countingcards;
+package com.jonatantierno.countingcards.actions;
 
-import java.util.Collections;
+import com.jonatantierno.countingcards.Game;
+import com.jonatantierno.countingcards.Player;
+
 import java.util.List;
 
 /**
@@ -13,14 +15,14 @@ public class DiscardAction extends Action{
     }
 
     @Override
-    public Game perform(Game game, int possibilityIndex) {
+    public Game performPossibility(Game game, int possibilityIndex) {
         // Never with possibilities because always visible.
         assert false;
         return null;
     }
 
     @Override
-    public Game perform(Game game) {
+    public Game performCertain(Game game) {
         Game newGame = game.cloneGame();
 
         List<String> cards = newGame.getPile(player);

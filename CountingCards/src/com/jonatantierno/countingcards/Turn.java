@@ -1,5 +1,8 @@
 package com.jonatantierno.countingcards;
 
+import com.jonatantierno.countingcards.actions.Action;
+import com.jonatantierno.countingcards.actions.ActionFactory;
+
 import java.util.*;
 
 /**
@@ -25,7 +28,7 @@ class Turn {
         }
 
         while(scanner.hasNext()){
-            actions.add(Action.build(player, scanner.next()));
+            actions.add(ActionFactory.build(player, scanner.next()));
         }
 
     }
@@ -48,7 +51,7 @@ class Turn {
         for(Action signaledAction:signalLine.actions){
             Action hiddenAction = getNextHiddenAction(realActionIterator);
 
-            hiddenAction.possibilities.add(Action.build(p, signaledAction.raw));
+            hiddenAction.possibilities.add(ActionFactory.build(p, signaledAction.raw));
 
         }
         signals.add(signalLine);

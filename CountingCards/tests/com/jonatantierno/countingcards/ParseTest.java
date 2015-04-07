@@ -1,6 +1,7 @@
 package com.jonatantierno.countingcards;
 
-import junit.framework.TestCase;
+import com.jonatantierno.countingcards.actions.Action;
+import com.jonatantierno.countingcards.actions.PassAction;
 import org.junit.Before;
 import org.junit.Test;
 

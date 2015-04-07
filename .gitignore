@@ -1,4 +1,3 @@
-**/.idea
 **/*.pyc
-**/out
-**/*.iml
+**/out/production
+**/out/test

@@ -1,4 +1,7 @@
-package com.jonatantierno.countingcards;
+package com.jonatantierno.countingcards.actions;
+
+import com.jonatantierno.countingcards.Game;
+import com.jonatantierno.countingcards.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +18,7 @@ public class DrawAction extends Action{
 
 
     @Override
-    public Game perform(Game game, int possibilityIndex) {
+    public Game performPossibility(Game game, int possibilityIndex) {
         assert possibilities.size() > possibilityIndex;
 
         Action possibleAction = possibilities.get(possibilityIndex);
@@ -32,26 +35,10 @@ public class DrawAction extends Action{
     }
 
     @Override
-    public Game perform(Game game) {
+    public Game performCertain(Game game) {
         Game newGame = game.cloneGame();
         newGame.getPile(player).add(card);
         return newGame;
-    }
-
-    @Override
-    public List<Game> performAllPossibilities(Game game) {
-        if (severalPossibilities()){
-            assert possibilities.size() > 0;
-
-            List<Game> gameList = new ArrayList<>();
-
-            for(int i=0; i<possibilities.size(); i++){
-                Game possibleGame = perform(game,i);
-                gameList.add(possibleGame);
-            }
-            return gameList;
-        }
-        return Collections.singletonList(perform(game));
     }
 
     @Override

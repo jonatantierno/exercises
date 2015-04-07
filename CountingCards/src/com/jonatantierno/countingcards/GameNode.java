@@ -1,5 +1,7 @@
 package com.jonatantierno.countingcards;
 
+import com.jonatantierno.countingcards.actions.Action;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -117,7 +119,7 @@ public class GameNode {
 
         Game newGame = game;
         for(Action action:actions){
-            newGame = action.performSomehow(newGame,possibilityIndex);
+            newGame = action.perform(newGame, possibilityIndex);
 
             if(newGame.equals(Game.IMPOSSIBLE)){
                 return GameNode.IMPOSSIBLE;

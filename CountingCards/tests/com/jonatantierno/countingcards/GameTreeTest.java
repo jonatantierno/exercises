@@ -15,18 +15,14 @@ import static org.junit.Assert.assertTrue;
  * Tests for processing the sample_input file
  */
 public class GameTreeTest {
-    CountingCards objectUnderTest;
-    GameNode initialTurn;
-
-    @Before
-    public void setup() throws FileNotFoundException {
-        initialTurn = CountingCards.parse("res/SAMPLE_INPUT_WITH_OPTIONS.txt");
-    }
 
     @Test
     public void sample3ShouldWork() throws FileNotFoundException {
-        GameNode turn = initialTurn;
+        check(CountingCards.parse("res/SAMPLE_INPUT_WITH_OPTIONS.txt"));
 
+    }
+
+    private void check(GameNode turn) throws FileNotFoundException {
         Scanner expectedScanner = new Scanner(new File("res/SAMPLE_SOLUTION.txt")).useDelimiter("\\n");
 
 
@@ -39,6 +35,10 @@ public class GameTreeTest {
 
             assertEquals(expectedScanner.nextLine(), actualScanner.nextLine());
         }
+    }
 
+    @Test
+    public void inputShouldWork() throws FileNotFoundException {
+        check(CountingCards.parse("res/INPUT.txt"));
     }
 }

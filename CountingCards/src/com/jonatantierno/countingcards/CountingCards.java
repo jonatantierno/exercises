@@ -28,17 +28,23 @@ public class CountingCards{
 
         List<GameNode> leaves = root.createSolutionTree();
 
+
         if (leaves.size() == 0){
             System.out.println("No solutions found");
             return;
         }
 
-        System.out.println(leaves.get(0).getResultAsString());
-
         if (leaves.size() > 1){
             System.out.println("\n\n"+leaves.size()+" solutions found");
-            return;
         }
+
+        System.out.println(leaves.get(0).getResultAsString());
+
+        for (int i=1; i<leaves.size(); i++){
+            System.out.println("\n____\n");
+            System.out.println(leaves.get(i).getResultAsString());
+        }
+
     }
 
 

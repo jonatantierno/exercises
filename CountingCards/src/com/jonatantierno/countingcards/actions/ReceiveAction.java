@@ -1,14 +1,13 @@
-package com.jonatantierno.countingcards;
+package com.jonatantierno.countingcards.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.jonatantierno.countingcards.Game;
+import com.jonatantierno.countingcards.Player;
 
 /**
  * Created by jonatan on 31/03/15.
  */
 public class ReceiveAction extends Action{
-    final Player sender;
+    public final Player sender;
 
     public ReceiveAction(Player p, String raw) {
         super(p, raw);
@@ -17,7 +16,7 @@ public class ReceiveAction extends Action{
     }
 
     @Override
-    public Game perform(Game game, int possibilityIndex) {
+    public Game performPossibility(Game game, int possibilityIndex) {
         assert possibilities.size() > possibilityIndex;
 
         Action possibleAction = possibilities.get(possibilityIndex);
@@ -46,7 +45,7 @@ public class ReceiveAction extends Action{
     }
 
     @Override
-    public Game perform(Game game) {
+    public Game performCertain(Game game) {
         Game newGame = game.cloneGame();
 
         newGame.receiveCard(card);
