@@ -16,12 +16,14 @@ import static org.junit.Assert.assertTrue;
  * Tests for parsing the input file
  */
 public class ParseTest {
+    public static final String PATH = "src/test/resources/";
+
     CountingCards objectUnderTest;
     GameNode root;
 
     @Before
     public void setup() throws FileNotFoundException {
-        root = CountingCards.parse("res/SIMPLE_INPUT.txt");
+        root = CountingCards.parse(ParseTest.PATH+"SIMPLE_INPUT.txt");
     }
 
     @Test

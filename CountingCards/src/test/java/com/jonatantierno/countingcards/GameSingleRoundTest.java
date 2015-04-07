@@ -21,7 +21,7 @@ public class GameSingleRoundTest {
 
     @Before
     public void setup() throws FileNotFoundException {
-        initialTurn = CountingCards.parse("res/SAMPLE_INPUT_2.txt");
+        initialTurn = CountingCards.parse(ParseTest.PATH+"SAMPLE_INPUT_2.txt");
     }
 
     @Test
@@ -40,7 +40,7 @@ public class GameSingleRoundTest {
     public void sample2ShouldWork() throws FileNotFoundException {
         GameNode turn = initialTurn;
 
-        Scanner scanner = new Scanner(new File("res/SAMPLE_SOLUTION_2.txt")).useDelimiter("\\n");
+        Scanner scanner = new Scanner(new File(ParseTest.PATH+"SAMPLE_SOLUTION_2.txt")).useDelimiter("\\n");
 
 
         List<GameNode> solutions = turn.createSolutionTree();

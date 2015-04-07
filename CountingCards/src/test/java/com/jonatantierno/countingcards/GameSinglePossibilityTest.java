@@ -1,6 +1,5 @@
 package com.jonatantierno.countingcards;
 
-import com.jonatantierno.countingcards.actions.Action;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class GameSinglePossibilityTest {
 
     @Before
     public void setup() throws FileNotFoundException {
-        initialTurn = CountingCards.parse("res/SAMPLE_INPUT.txt");
+        initialTurn = CountingCards.parse(ParseTest.PATH +"SAMPLE_INPUT.txt");
     }
 
     @Test
@@ -70,7 +69,7 @@ public class GameSinglePossibilityTest {
 
     @Test
     public void sampleShouldWork() throws FileNotFoundException {
-        Scanner expectedScanner = new Scanner(new File("res/SAMPLE_SOLUTION.txt")).useDelimiter("\\n");
+        Scanner expectedScanner = new Scanner(new File(ParseTest.PATH+ "SAMPLE_SOLUTION.txt")).useDelimiter("\\n");
 
         List<GameNode> nodeList = initialTurn.createSolutionTree();
 
