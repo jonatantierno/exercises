@@ -58,9 +58,6 @@ public class PassAction extends Action{
             newHand.remove(card);
         } else if (newHand.contains(Game.UNKNOWN_CARD)){
             newHand.remove(Game.UNKNOWN_CARD);
-        } else {
-            // Do not remove anything.
-            // This should never happen, but it does in SAMPLE_INPUT_2.txt
         }
         newGame.passCard(card);
         return newGame;
