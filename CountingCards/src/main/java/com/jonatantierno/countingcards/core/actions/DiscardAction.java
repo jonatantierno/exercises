@@ -1,7 +1,7 @@
-package com.jonatantierno.countingcards.actions;
+package com.jonatantierno.countingcards.core.actions;
 
-import com.jonatantierno.countingcards.Game;
-import com.jonatantierno.countingcards.Player;
+import com.jonatantierno.countingcards.core.Game;
+import com.jonatantierno.countingcards.core.Player;
 
 import java.util.List;
 
@@ -10,8 +10,12 @@ import java.util.List;
  */
 public class DiscardAction extends Action{
 
-    public DiscardAction(Player p, String raw) {
-        super(p, raw);
+    public DiscardAction(Player player, String raw, String card) {
+        super(player, raw, card);
+    }
+
+    public DiscardAction(Player player, String card) {
+        super(player, "", card);
     }
 
     @Override

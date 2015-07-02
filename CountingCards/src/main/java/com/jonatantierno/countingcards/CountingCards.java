@@ -1,5 +1,12 @@
 package com.jonatantierno.countingcards;
 
+import com.jonatantierno.countingcards.core.GameNode;
+import com.jonatantierno.countingcards.core.Player;
+import com.jonatantierno.countingcards.core.Turn;
+import com.jonatantierno.countingcards.rockygame.RockyGame;
+import com.jonatantierno.countingcards.rockygame.RockyPlayers;
+import com.jonatantierno.countingcards.rockygame.TurnParser;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -8,66 +15,73 @@ import java.util.Scanner;
 
 public class CountingCards{
 
-    public CountingCards() {
-    }
-
     /**
      * Main method.
      * @param args receives the name of the INPUT file.
      */
     public static void main(String[] args) {
-        CountingCards objectUnderTest = new CountingCards();
-        GameNode root= null;
+        CountingCards mainObject = new CountingCards();
+        GameNode rootGameNode= null;
 
         try {
-            root = objectUnderTest.parse("INPUT.txt");
+            rootGameNode = mainObject.parse("INPUT.txt");
         } catch (FileNotFoundException e) {
             System.out.println("File INPUT.txt not found");
             return;
         }
 
-        List<GameNode> leaves = root.createSolutionTree();
+        List<GameNode> solutions = rootGameNode.findSolutions();
 
-
-        if (leaves.size() == 0){
+        if (solutions.size() <= 0){
             System.out.println("No solutions found");
-            return;
+        } else if (solutions.size() == 1){
+            printSolution(solutions);
+        } else if (solutions.size() > 1){
+            printAllPossibleSolutions(solutions);
         }
+    }
 
-        if (leaves.size() > 1){
-            System.out.println("\n\n"+leaves.size()+" solutions found");
-        }
-
+    private static void printSolution(List<GameNode> leaves) {
         System.out.println(leaves.get(0).getResultAsString());
+    }
 
-        for (int i=1; i<leaves.size(); i++){
+    private static void printAllPossibleSolutions(List<GameNode> solutions) {
+        System.out.println("\n\n"+solutions.size()+" solutions found");
+
+        System.out.println(solutions.get(0).getResultAsString());
+
+        for (int i=1; i<solutions.size(); i++){
             System.out.println("\n____\n");
-            System.out.println(leaves.get(i).getResultAsString());
+            System.out.println(solutions.get(i).getResultAsString());
         }
-
     }
 
 
     static final GameNode parse(String filePath) throws FileNotFoundException {
-            Game game = new Game();
+            TurnParser turnParser = new TurnParser();
 
             List<Turn> inputLines = new ArrayList<>();
 
             Scanner scanner = new Scanner(new File(filePath)).useDelimiter("\\n");
+
+            Turn currentTurn = null;
+
             while (scanner.hasNext()){
-                Turn line = new Turn(scanner.next());
+                Turn line = turnParser.readTurn(scanner.next());
 
-                if (line.getPlayer() != Player.SIGNAL) {
-                    inputLines.add(line);
+                if (isSignal(line)) {
+                    turnParser.addSignal(currentTurn, line);
                 } else {
-                    Turn lilsLastTurn = inputLines.get(inputLines.size() - 1);
-
-                    assert lilsLastTurn.getPlayer() == Player.LIL;
-
-                    lilsLastTurn.addSignal(Player.LIL,line);
+                    inputLines.add(line);
+                    currentTurn = line;
                 }
             }
 
-            return new GameNode(Player.NONE, game, inputLines);
+            return new GameNode(Player.NULL, new RockyGame(), inputLines);
     }
+
+    private static boolean isSignal(Turn line) {
+        return RockyPlayers.SIGNAL.equals(line.getPlayer());
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.jonatantierno.countingcards;
 
+import com.jonatantierno.countingcards.core.GameNode;
 import org.junit.Test;
 
 import java.io.File;
@@ -20,7 +21,7 @@ public class GameTreeTest {
         Scanner expectedScanner = new Scanner(new File(ParseTest.PATH+"SAMPLE_SOLUTION.txt")).useDelimiter("\\n");
 
 
-        List<GameNode> solutions = CountingCards.parse(ParseTest.PATH+"SAMPLE_INPUT_WITH_OPTIONS.txt").createSolutionTree();
+        List<GameNode> solutions = CountingCards.parse(ParseTest.PATH+"SAMPLE_INPUT_WITH_OPTIONS.txt").findSolutions();
         String resultAsString = solutions.get(0).getResultAsString();
         Scanner actualScanner = new Scanner(resultAsString).useDelimiter("\\n");
 

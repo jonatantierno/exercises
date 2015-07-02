@@ -1,6 +1,8 @@
-package com.jonatantierno.countingcards;
+package com.jonatantierno.countingcards.core;
 
-import com.jonatantierno.countingcards.actions.Action;
+import com.jonatantierno.countingcards.core.actions.Action;
+import com.jonatantierno.countingcards.rockygame.RockyPlayers;
+import com.jonatantierno.countingcards.rockygame.serializer.PileSerializer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,21 +13,22 @@ import java.util.List;
  * Created by jonatan on 31/03/15.
  */
 public class GameNode {
-    private static final GameNode IMPOSSIBLE = new GameNode(Player.NONE, Game.IMPOSSIBLE,Collections.<Turn>emptyList(),null);
+    private static final GameNode IMPOSSIBLE = new GameNode(Player.NULL, Game.IMPOSSIBLE,Collections.<Turn>emptyList(),null);
 
-    final List<Turn> turns; // This should be an immutable list...
-    final Game game;
-    List<GameNode> children;
+    public final List<Turn> turns; // This should be an immutable list...
+    public final Game game;
     public final GameNode parent;
     public final Player player;
 
-    public GameNode(Player player, Game g, List<Turn> turns) {
-        this(player, g,turns,GameNode.IMPOSSIBLE);
+    private List<GameNode> children;
+
+    public GameNode(Player player, Game game, List<Turn> turns) {
+        this(player, game,turns,GameNode.IMPOSSIBLE);
     }
 
-    public GameNode(Player player, Game g, List<Turn> turns, GameNode parent) {
+    public GameNode(Player player, Game game, List<Turn> turns, GameNode parent) {
         this.turns = turns;
-        game = g;
+        this.game = game;
         children = null;
         this.parent = parent;
         this.player = player;
@@ -36,19 +39,19 @@ public class GameNode {
      * This method creates the tree and calculates the solutions with a backtracking algorithm.
      * @return list of leaves of the tree that contain a valid solution.
      */
-    public List<GameNode> createSolutionTree() {
+    public List<GameNode> findSolutions() {
         if (!moreRounds()){
             return Collections.emptyList();
         }
 
-        this.children = calculateNodeChildren();
+        this.children = buildPossibilities();
 
         List<GameNode> solutions = new ArrayList<>();
         for (GameNode node : children) {
             if (node.isSolution()) {
                 solutions.add(node);
             } else {
-                solutions.addAll(node.createSolutionTree());
+                solutions.addAll(node.findSolutions());
             }
         }
 
@@ -70,8 +73,8 @@ public class GameNode {
      */
     public String getResultAsString() {
         String s = "";
-        if (player.equals(Player.LIL)) {
-            s = game.getPileAsStringNoName(Player.LIL);
+        if (RockyPlayers.PARTNER.equals(player)) {
+            s = new PileSerializer(game).toStringNoName(player);
         }
 
         String prev = "";
@@ -87,24 +90,14 @@ public class GameNode {
         return prev+ delimiter +s;
     }
 
-    public String getPileAsString(Player player) {
-        return game.getPileAsString(player);
-    }
-
-
-    public List<GameNode> calculateNodeChildren() {
+    public List<GameNode> buildPossibilities() {
         ArrayList<GameNode> possibleGames = new ArrayList<>();
 
-        int numberOfPossibilities = getNextTurn().getNumberOfPossibilities();
+        possibleGames.add(buildPossibility(0));
 
-        if (numberOfPossibilities > 0){
-            for(int i = 0; i< numberOfPossibilities; i++){
-                GameNode result = calculateNodeChildren(i);
-                possibleGames.add(result);
-            }
-        }
-        else {
-            possibleGames.add(calculateNodeChildren(0));
+        int numberOfPossibilities = getNextTurn().getNumberOfPossibilities();
+        for(int i = 1; i< numberOfPossibilities; i++){
+            possibleGames.add(buildPossibility(i));
         }
 
         return possibleGames;
@@ -114,7 +107,7 @@ public class GameNode {
         return turns.get(0);
     }
 
-    public GameNode calculateNodeChildren(int possibilityIndex) {
+    public GameNode buildPossibility(int possibilityIndex) {
         List<Action> actions = getNextTurn().getActions();
 
         Game newGame = game;
@@ -132,25 +125,25 @@ public class GameNode {
         return getNextTurn().signals.size() == 0;
     }
 
-    Player getNextPlayer() {
+    public Player getNextPlayer() {
         return getNextTurn().getPlayer();
     }
 
-    GameNode advanceRound() {
+    public GameNode advanceRound() {
         Player firstPlayerInRound = getNextPlayer();
 
-        GameNode node = calculateNodeChildren(0);
+        GameNode node = buildPossibility(0);
 
         while(node.moreRounds() &&
                 !firstPlayerInRound.equals(node.getNextPlayer())){
-            node = node.calculateNodeChildren(0);
+            node = node.buildPossibility(0);
         }
         return node;
 
     }
 
 
-    boolean moreRounds() {
+    public boolean moreRounds() {
         return turns.size()>0;
     }
 }

@@ -1,7 +1,8 @@
-package com.jonatantierno.countingcards.actions;
+package com.jonatantierno.countingcards.core.actions;
 
-import com.jonatantierno.countingcards.Game;
-import com.jonatantierno.countingcards.Player;
+import com.jonatantierno.countingcards.core.Game;
+import com.jonatantierno.countingcards.rockygame.RockyGame;
+import com.jonatantierno.countingcards.core.Player;
 
 import java.util.List;
 
@@ -11,10 +12,16 @@ import java.util.List;
 public class PassAction extends Action{
     public final Player recipient;
 
-    public PassAction(Player p, String raw) {
-        super(p, raw);
+    public PassAction(Player player, String raw, String card, Player recipient) {
+        super(player, raw, card);
 
-        this.recipient = Player.getPlayerFromRawString(raw);
+        this.recipient = recipient;
+    }
+
+    public PassAction(Player player, String card, Player recipient) {
+        super(player, "", card);
+
+        this.recipient = recipient;
     }
 
     @Override
@@ -56,8 +63,8 @@ public class PassAction extends Action{
 
         if (newHand.contains(card)){
             newHand.remove(card);
-        } else if (newHand.contains(Game.UNKNOWN_CARD)){
-            newHand.remove(Game.UNKNOWN_CARD);
+        } else if (newHand.contains(RockyGame.UNKNOWN_CARD)){
+            newHand.remove(RockyGame.UNKNOWN_CARD);
         }
         newGame.passCard(card);
         return newGame;
@@ -68,18 +75,19 @@ public class PassAction extends Action{
     @Override
     public boolean isPossible(Game game) {
         // Can Pass the card only if I have it,
-        if (game.anybodyElseHasCard(player,card) && !game.getPile(Player.TRANSIT).contains(card)){
+        if (game.anybodyElseHasCard(player,card) && !game.getPile(game.transitPile).contains(card)){
             return false;
         }
         if (game.getPile(player).contains(card)){
             return true;
         }
-        if (game.getPile(player).contains(Game.UNKNOWN_CARD)){
+        if (game.getPile(player).contains(RockyGame.UNKNOWN_CARD)){
             return true;
         }
-        if (card.equals(Game.UNKNOWN_CARD) && game.getPile(player).size()>0){
+        if (card.equals(RockyGame.UNKNOWN_CARD) && game.getPile(player).size()>0){
             return true;
         }
         return false;
     }
+
 }

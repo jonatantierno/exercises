@@ -1,19 +1,20 @@
-package com.jonatantierno.countingcards.actions;
+package com.jonatantierno.countingcards.core.actions;
 
-import com.jonatantierno.countingcards.Game;
-import com.jonatantierno.countingcards.Player;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.jonatantierno.countingcards.core.Game;
+import com.jonatantierno.countingcards.rockygame.RockyGame;
+import com.jonatantierno.countingcards.core.Player;
 
 /**
  * Created by jonatan on 31/03/15.
  */
 public class DrawAction extends Action{
 
-    public DrawAction(Player p, String raw) {
-        super(p, raw);
+    public DrawAction(Player player, String raw, String card) {
+        super(player, raw, card);
+    }
+
+    public DrawAction(Player player, String card){
+        super(player, "", card);
     }
 
 
@@ -30,7 +31,7 @@ public class DrawAction extends Action{
 
             return possibleGame;
         } else {
-            return Game.IMPOSSIBLE;
+            return RockyGame.IMPOSSIBLE;
         }
     }
 
@@ -48,5 +49,4 @@ public class DrawAction extends Action{
         }
         return true;
     }
-
 }

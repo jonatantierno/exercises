@@ -1,7 +1,7 @@
-package com.jonatantierno.countingcards.actions;
+package com.jonatantierno.countingcards.core.actions;
 
-import com.jonatantierno.countingcards.Game;
-import com.jonatantierno.countingcards.Player;
+import com.jonatantierno.countingcards.core.Game;
+import com.jonatantierno.countingcards.core.Player;
 
 /**
  * Created by jonatan on 31/03/15.
@@ -9,10 +9,14 @@ import com.jonatantierno.countingcards.Player;
 public class ReceiveAction extends Action{
     public final Player sender;
 
-    public ReceiveAction(Player p, String raw) {
-        super(p, raw);
+    public ReceiveAction(Player player, String raw, String card, Player sender) {
+        super(player, raw, card);
 
-        this.sender = Player.getPlayerFromRawString(raw);
+        this.sender = sender;
+    }
+
+    public ReceiveAction(Player player, String card, Player sender) {
+        this(player, "", card, sender);
     }
 
     @Override
@@ -61,10 +65,10 @@ public class ReceiveAction extends Action{
         if(game.getPile(sender).contains(card)){
             return true;
         }
-        if(game.anybodyElseHasCard(Player.TRANSIT,card)){
+        if(game.anybodyElseHasCard(game.transitPile,card)){
             return false;
         }
-        return game.getPile(Player.TRANSIT).contains(card) ||
-                game.getPile(Player.TRANSIT).contains(Game.UNKNOWN_CARD);
+        return game.getPile(game.transitPile).contains(card) ||
+                game.getPile(game.transitPile).contains(Game.UNKNOWN_CARD);
     }
 }
